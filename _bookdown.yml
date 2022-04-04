@@ -1,8 +1,8 @@
-book_filename: "finalproj"
+book_filename: "Olympics"
 output_dir: docs
 delete_merged_file: true
-edit: https://github.com/YOUR GITHUB USERNAME/YOUR REPO NAME/edit/main/%s
-view: https://github.com/YOUR GITHUB USERNAME/YOUR REPO NAME/blob/main/%s
+edit: https://github.com/Sihuiliang/Olympics/edit/main/%s
+view: https://github.com/Sihuiliang/Olympics/blob/main/%s
 language:
   ui:
     chapter_name: "Chapter "

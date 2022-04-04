@@ -1,6 +1,6 @@
 --- 
-title: "YOUR TITLE HERE"
-author: "YOUR NAMES HERE"
+title: "Olympics"
+author: "Sihui Liang, Yuxuan Fu"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 ---
