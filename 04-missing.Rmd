@@ -1,1 +1,71 @@
 # Missing values
+
+# For Alpine_skiing.csv dataset
+
+# Describe missing pattern by row -------------------------------------------------------------
+Alpine_Skiing <- read_delim("Alpine Skiing.csv", delim = ";", escape_double = FALSE, trim_ws = TRUE)
+rowSums(is.na(Alpine_Skiing)) %>% sort(decreasing = TRUE) %>% head(40)
+tidyskiing <- Alpine_Skiing %>% 
+    gather(key, value, -`Race-ID`) %>% 
+    mutate(missing = ifelse(is.na(value), "yes", "no"))
+
+# This data set is big, with large row number. Therefore, neglect Race ID names to make missing plot clearer.
+ggplot(tidyskiing[], aes(x = key, y = fct_rev(`Race-ID`), fill = missing)) +
+  geom_tile(color = "white") + 
+  ggtitle("Alpine_Skiing with NAs added") +
+  scale_fill_viridis_d() + # discrete scale
+  theme_bw() + 
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank())
+        
+
+# For Alpine Skiing dataset, there are several columns with almost no values or missing percentage larger than 50%, which means these columns could be neglected when we are using this dataset. While for some culumns, their partial missing patterns show moderate missing percentage, which indicates that imputation might be useful when we are analyzing our data. 
+
+# Describe missing pattern by column -------------------------------------------------------------
+
+colSums(is.na(Alpine_Skiing)) %>% sort(decreasing = TRUE)
+tidyskiing <- Alpine_Skiing %>% 
+    gather(key, value, -`Race-ID`) %>% 
+    mutate(missing = ifelse(is.na(value), "yes", "no")) %>%
+    group_by(key) %>%
+    mutate(missing_count = sum(missing=="yes"),
+           missing_perc = round(missing_count/dim(Alpine_Skiing)[1], 4))
+
+tidyskiing %>% 
+  ggplot(aes(x = key, y = as.numeric(missing_perc))) + 
+  geom_bar(stat="identity", fill="steelblue") +
+  ggtitle("Missing Number by Columns") +
+  xlab("") + ylab('Missing Number') + 
+  theme(axis.text.x = element_text(angle = 90, hjust=1))
+  # geom_text(aes(label = missing_perc), vjust=1.6, color="white", size=3.5) 
+  # scale_x_continuous(breaks = 1:28, labels = tidyskiing$key)
+  
+# For Alpine_Skiing, essential columns reflecting demographic of atheletes and races information, like latitude/longtitude/season/athelete/nation/gender are not missing. Yet for some auxiliary columns, like 'FIS Points'/'Bib (starter no)' there are significant missing pattern. And columns with the most significant missing pattern are time and time differences columns.
+
+# Describe Missing pattern by value -------------------------------------------------------------
+
+# Check missing 'Fédération Internationale de Ski' Score (i.e. FIS Score) by Season
+percent_missing <- Alpine_Skiing %>% group_by(`Race-ID`, Season) %>%
+  summarize(num_races = n(), num_na = sum(is.na(`Difference_Total_datetime`))) %>%
+  mutate(percent_na = round(num_na/num_races, 2)) %>%
+  arrange(-percent_na)
+percent_missing #%>% head(10)
+
+percent_missing_FIS <- Alpine_Skiing %>% group_by(Season) %>%
+  summarize(num_years = n(), num_na = sum(is.na(`FIS Points`))) %>%
+  mutate(percent_na = round(num_na/num_years, 2)) %>% 
+  arrange(Season)
+percent_missing_FIS %>% tail(9)
+
+patterncolor <- c("#cbc9e2", "#2b8cbe")
+
+percent_missing_FIS %>% 
+  mutate(missing_20 = ifelse(percent_na >= 0.2, '>20%', '<20%')) %>%
+  ggplot(aes(x = Season, y = percent_na, fill = missing_20)) +
+  geom_col() +
+  scale_fill_manual(values = patterncolor) + 
+  xlab('Season') + ylab('Missing Percentage') + 
+  scale_x_binned() + 
+  ggtitle('Missing Percentage of FIS Score for athletes in each Season')
+  
+# Check missing pattern of FIS Score of athlete along the Seasons. Set 20% as a threshold for the missing percentage, yet we find that among all the Season bins, FIS Score's missing percentage are constantly larger than 20%.
