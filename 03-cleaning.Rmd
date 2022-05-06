@@ -1,19 +1,23 @@
 # Data transformation
 
+```{r}
 library(readr)
 library(readxl)
 library(tidyverse)
 library(ggplot2)
 library(plotly)
 library(gganimate)
-library(RColorBrewer)
-library(naniar)
-library(gridExtra)
-library(grid)
-library(leaflet)
-library(ggmap)
 library(GGally)
+library(ggrepel)
+library(RColorBrewer)
+library(grid)
+library(gridExtra)
+library(ggmap)
+library(leaflet)
+library(naniar)
 library(redav)
+library(ggh4x)
+library(psych)
 library(countrycode)
 
 olympic_athletes_events <- read_csv("Olympic Athletes and Events.csv", col_types = cols(
@@ -35,7 +39,7 @@ olympic_athletes_events <- read_csv("Olympic Athletes and Events.csv", col_types
                  )
 )
 
-noc_regions <- read.csv("~/Documents/STAT_5293/final project/noc_regions.txt") 
+noc_regions <- read.csv("noc_regions.txt") 
 alpine_skiing <- read_delim("Alpine Skiing.csv", 
                             delim = ";", 
                             escape_double = FALSE, 
@@ -50,3 +54,4 @@ olympic_athletes_events <- olympic_athletes_events %>%
                 mutate(continent = countrycode(sourcevar = region,
                                                origin = "country.name",
                                                destination = "continent"))
+```

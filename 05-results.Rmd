@@ -1,1 +1,530 @@
 # Results
+
+# Q1: As economics exploded, what was the development of the 120 years Olympics from 1986 to 2016?
+
+## Pic 1
+```{r}
+numcount <- olympic_athletes_events %>% 
+            group_by(Year, Season) %>%
+            summarize(Athletes = length(unique(ID)), 
+                      Teams = length(unique(Team)),
+                      Sports = length(unique(Sport)))
+
+
+p1 <- ggplot(numcount, aes(x=Year, y=Athletes, group=Season, color=Season)) +
+          geom_point(size=1.8) +
+          geom_line() +
+          scale_color_manual(values=c("#cbc9e2","#2b8cbe")) +
+          xlab("") +  
+        annotate("text", x=c(1932,1956,1976,1980),
+                 y=c(2000,2750,6800,4700),
+                 label=c("L.A. 1932","Melbourne 1956","Montreal 1976","Moscow 1980"),
+                 size=2.5) +
+        annotate("text",x=c(1916,1942),y=c(9000,9000),
+                 label=c("WWI","WWII"), size=3.5, color="sienna1") +
+        geom_segment(mapping=aes(x=1914,y=8000,xend=1918,yend=8000),color="sienna1", size=1.5) +
+        geom_segment(mapping=aes(x=1939,y=8000,xend=1945,yend=8000),color="sienna1", size=1.5) + 
+        theme(legend.position="bottom")
+p2 <- ggplot(numcount, aes(x=Year, y=Teams, group=Season, color=Season)) +
+        geom_point(size=1.8) +
+        geom_line() +
+        scale_color_manual(values=c("#cbc9e2","#2b8cbe")) +
+        xlab("") +  
+        # annotate("text", x=c(1932,1976,1980),
+        #          y=c(62,110,85),
+        #          label=c("L.A. 1932","Montreal 1976","Moscow 1980"),
+        #          size=2.5) + 
+        theme(legend.position="bottom")
+p3 <- ggplot(numcount, aes(x=Year, y=Sports, group=Season, color=Season)) +
+        geom_point(size=1.8) +
+        geom_line() +
+        scale_color_manual(values=c("#cbc9e2","#2b8cbe")) + 
+        theme(legend.position="bottom")
+
+tg <- grid::textGrob('Athletes, Teams and Events over Years', 
+                     gp = gpar(fontsize = 13, fontface = 'bold'))
+sg <- textGrob('Attendence Number vs Year', 
+               gp = gpar(fontsize = 10))
+laym <- rbind(rep(1,3), rep(2,3), (3:(3+2)))
+plot_list <- list(p1, p2, p3)
+g <- c(list(tg),list(sg),plot_list)
+grid.arrange(grobs=g,layout_matrix=laym,heights=c(1, 1,10))
+```
+
+
+## Pic 2
+
+```{r}
+world <- map_data("world")
+losangeles <- olympic_athletes_events %>% 
+  filter(Year == 1932 & Season == "Summer") %>%
+  group_by(region) %>%
+  summarize(LosAngeles = length(unique(ID))) 
+
+# L.A. 1932 Summer Olympic
+data1 <- world %>% left_join(
+  tibble(region=unique(world$region))) %>% 
+    left_join(losangeles, by="region") %>%
+  mutate(LosAngeles = ifelse(is.na(LosAngeles), 0, LosAngeles)) 
+
+data1 %>% 
+  ggplot(aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = LosAngeles)) +
+  labs(title = "The Number of Athletes globally Participated in Los Angeles 1932",
+       x = NULL, y=NULL) +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        panel.background = element_rect(fill = "lightsteelblue4"),
+        plot.title = element_text(hjust = 0.5)) +
+  guides(fill=guide_colourbar(title="Athletes")) +
+  scale_fill_gradient(low="white",high="orchid3") +
+  theme(plot.title = element_text(size = 10,face="bold.italic", color = "red3"),
+        legend.title = element_text(size = 8,face="bold.italic", color = "black"),
+        legend.text  = element_text(size = 7,face="italic", color = "black")) 
+
+# Melbourne 1956 Summer Olympic
+melbourne <- olympic_athletes_events %>% 
+  filter(Year == 1956 & Season == "Summer") %>%
+  group_by(region) %>%
+  summarize(Melbourne = length(unique(ID)))
+
+data2 <- world %>% left_join(
+          tibble(region=unique(world$region))) %>% 
+          left_join(melbourne, by="region") %>%
+          mutate(Melbourne = ifelse(is.na(Melbourne), 0, Melbourne)) 
+
+data2 %>% 
+  ggplot(aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = Melbourne)) +
+  labs(title = "The Number of Athletes globally Participated in Melbourne 1956",
+       x = NULL, y=NULL) +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        panel.background = element_rect(fill = "lightsteelblue4"),
+        plot.title = element_text(hjust = 0.5)) +
+  guides(fill=guide_colourbar(title="Athletes")) +
+  scale_fill_gradient(low="white",high="orchid3") + 
+  theme(plot.title = element_text(size = 10,face="bold.italic", color = "red3"),
+        legend.title = element_text(size = 8,face="bold.italic", color = "black"),
+        legend.text  = element_text(size = 7,face="italic", color = "black")) 
+
+# Montreal 1976 Summer Olympic
+montreal <- olympic_athletes_events %>% 
+  filter(Year == 1976 & Season == "Summer") %>%
+  group_by(region) %>%
+  summarize(Montreal = length(unique(ID)))
+
+data3 <- world %>% left_join(
+          tibble(region=unique(world$region))) %>% 
+          left_join(montreal, by="region") %>%
+          mutate(Montreal = ifelse(is.na(Montreal), 0, Montreal)) 
+
+data3 %>% 
+  ggplot(aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = Montreal)) +
+  labs(title = "The Number of Athletes globally Participated in Montreal 1976",
+       x = NULL, y=NULL) +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        panel.background = element_rect(fill = "lightsteelblue4"),
+        plot.title = element_text(hjust = 0.5)) +
+  guides(fill=guide_colourbar(title="Athletes")) +
+  scale_fill_gradient(low="white",high="orchid3") + 
+  theme(plot.title = element_text(size = 10,face="bold.italic", color = "red3"),
+        legend.title = element_text(size = 8,face="bold.italic", color = "black"),
+        legend.text  = element_text(size = 7,face="italic", color = "black")) 
+
+# Moscow 1980 Summer Olympic
+moscow <- olympic_athletes_events %>% 
+  filter(Year == 1980 & Season == "Summer") %>%
+  group_by(region) %>%
+  summarize(Moscow = length(unique(ID)))
+
+data4 <- world %>% left_join(
+          tibble(region=unique(world$region))) %>% 
+          left_join(moscow, by="region") %>%
+          mutate(Moscow = ifelse(is.na(Moscow), 0, Moscow)) 
+
+data4 %>% 
+  ggplot(aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = Moscow)) +
+  labs(title = "The Number of Athletes globally Participated in Moscow 1980",
+       x = NULL, y=NULL) +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        panel.background = element_rect(fill = "lightsteelblue4"),
+        plot.title = element_text(hjust = 0.5)) +
+  guides(fill=guide_colourbar(title="Athletes")) +
+  scale_fill_gradient(low="white",high="orchid3") + 
+  theme(plot.title = element_text(size = 10,face="bold.italic", color = "red3"),
+        legend.title = element_text(size = 8,face="bold.italic", color = "black"),
+        legend.text  = element_text(size = 7,face="italic", color = "black")) 
+```
+
+# Q2:  Since the 2022 Winter Olympics was held this year, what about the development of Alpine Skiing in the Winter Olympics?
+
+## Pic 3
+```{r}
+p1.1 <- olympic_athletes_events %>% 
+      filter(Sport == "Alpine Skiing") %>%
+      group_by(Year) %>%
+      summarize(Athletes = length(unique(Name)),
+                Nations = length(unique(NOC)),
+                Events = length(unique(Event))
+      ) %>% ggplot(aes(x = Year, y = Nations)) +
+      geom_point(size = 2) +
+      geom_line() + xlab("")
+
+p2.1 <- olympic_athletes_events %>% 
+      filter(Sport == "Alpine Skiing") %>%
+      group_by(Year) %>%
+      summarize(Athletes = length(unique(Name)),
+                Nations = length(unique(NOC)),
+                Events = length(unique(Event))
+      ) %>% ggplot(aes(x = Year, y = Athletes)) +
+      geom_point(size = 2) +
+      geom_line() + xlab("")
+
+p3.1 <- olympic_athletes_events %>% 
+      filter(Sport == "Alpine Skiing") %>%
+      group_by(Year) %>%
+      summarize(Athletes = length(unique(Name)),
+                Nations = length(unique(NOC)),
+                Events = length(unique(Event))
+      ) %>% ggplot(aes(x = Year, y = Events)) +
+      geom_point(size = 2) +
+      geom_line() + xlab("")
+
+tg <- grid::textGrob('Countries attending Apline Skiing Competitions ', gp = gpar(fontsize = 13, fontface = 'bold'))
+sg <- textGrob('Attendence Number vs Year', gp = gpar(fontsize = 10))
+laym <- matrix(seq_len(5), ncol = 1)
+plot_list <- list(p1.1, p2.1, p3.1)
+g <- c(list(tg),list(sg),plot_list)
+grid.arrange(grobs=g,layout_matrix=laym,heights=c(1,0.7,3,3,3)) 
+
+```
+
+## Pic 4
+
+```{r}
+p3.1 <- alpine_skiing %>% group_by(Season, Event) %>%
+  summarise(Nations = length(unique(Nation)), 
+            # Codexs = length(unique(Codex)),
+            Athletes = length(unique(Athlete))) %>%
+  ggplot(aes(x = Season, y = Athletes)) + 
+  geom_line(color = "grey") + geom_point(aes(color = Event)) +
+  xlab("Year") + 
+  facet_wrap(~ Event) +
+  scale_color_brewer(direction = -1) + theme_dark() +
+  labs(title = "The number of athletes attending Alpine Skiing events over times\n four major Alpine Skiing events") + 
+  theme(plot.title = element_text(size = 10,face="bold.italic", color = "grey3"),
+        axis.title.x = element_text(size = 9,face="bold.italic"),
+        axis.title.y = element_text(size = 9,face="bold.italic"),
+      legend.title = element_text(size = 8,face="bold.italic", color = "black"),
+      legend.text  = element_text(size = 7,face="italic", color = "black")) 
+
+p3.2 <- alpine_skiing %>% group_by(Season, Event) %>%
+  summarise(Nations = length(unique(Nation)), 
+            # Codexs = length(unique(Codex)),
+            Athletes = length(unique(Athlete))) %>%
+  ggplot(aes(x = Season, y = Nations)) + 
+  geom_line(color = "grey") + geom_point(aes(color = Event)) +
+  facet_wrap(~ Event) + xlab("Year") +
+  scale_colour_brewer(palette = "Greens") + theme_grey() +
+    labs(title = "The number of Nations attending Alpine Skiing events over times\n four major Alpine Skiing events") + 
+  theme(plot.title = element_text(size = 10,face="bold.italic", color = "grey3"),
+        axis.title.x = element_text(size = 9,face="bold.italic"),
+        axis.title.y = element_text(size = 9,face="bold.italic"),
+      legend.title = element_text(size = 8,face="bold.italic", color = "black"),
+      legend.text  = element_text(size = 7,face="italic", color = "black")) 
+
+
+p3.0 <- alpine_skiing %>% group_by(Season) %>%
+  summarise(Nations = length(unique(Nation)), 
+            # Codexs = length(unique(Codex)),
+            Athletes = length(unique(Athlete))) %>%
+  ggplot(aes(x = Season, y = Athletes)) + 
+  geom_line(color = "skyblue3", size = 1) +  #geom_point(aes(color = Event)) +
+  # facet_wrap(~ Event) +
+  scale_color_brewer(direction = -1) + theme_grey() + 
+  xlab("Year") +  ylab("Athlete Number") + 
+  theme(axis.text.y = element_text(size = 5),
+        axis.text.x = element_text(size = 5))
+
+p3.1
+p3.2
+
+
+
+```
+# Q3: Which countries are the most dominant over the history of Olympics?
+## Pic 5
+
+```{r}
+# Medals for Olympics
+lev_teams2 <- olympic_athletes_events %>% 
+  filter(!is.na(Medal))%>% 
+  group_by(Team, Medal) %>%
+  summarize(Count = length(Medal)) %>%
+  group_by(Team) %>%
+  summarize(Total = sum(Count)) %>%
+  arrange(desc(Total)) %>% select(Team) 
+
+p5.1 <- olympic_athletes_events %>% 
+  filter(!is.na(Medal))%>% 
+  filter(Team %in% (lev_teams2$Team[1:25])) %>%
+  group_by(Team, Medal) %>%
+  summarize(Count = length(Medal)) %>%
+  mutate(Team = ifelse(is.na(Team), "United States", Team)) %>%
+  mutate(Team = forcats::fct_rev(factor(Team, levels = lev_teams2$Team[1:30]))) %>%
+  ggplot(aes(Team, Count, fill = Medal)) +
+  geom_col() + coord_flip() +
+  scale_fill_manual(values = c("palegoldenrod", "plum3", "rosybrown4")) + 
+  ggtitle("Historical medal counts for Olympics from 1896 to 2016") +
+  theme(plot.title = element_text(size = 9,face="bold.italic"),
+        axis.title.x = element_text(size = 9,face="bold.italic"),
+        axis.title.y = element_text(size = 9,face="bold.italic"),
+        axis.text = element_text(size = 7),
+        legend.text = element_text(size = 8,face="italic"))
+
+# Medals for Alpine Skiing
+lev_teams <- olympic_athletes_events %>% 
+  filter(!is.na(Medal) & Sport == "Alpine Skiing")%>% 
+  group_by(Team, Medal) %>%
+  summarize(Count = length(Medal)) %>%
+  group_by(Team) %>%
+  summarize(Total = sum(Count)) %>%
+  arrange(Total) %>% pull(Team)
+
+p5.2 <- olympic_athletes_events %>% 
+  filter(!is.na(Medal) & Sport == "Alpine Skiing")%>% 
+  group_by(Team, Medal) %>%
+  summarize(Count = length(Medal)) %>%
+  mutate(Team = factor(Team, levels = lev_teams)) %>%
+  ggplot(aes(Team, Count, fill = Medal)) +
+  geom_col() + coord_flip() +
+  scale_fill_manual(values = c("honeydew1","yellowgreen","turquoise4")) +
+  ggtitle("Historical medal counts from Alpine Skiing Competitions") +
+  theme(plot.title = element_text(size = 9,face="bold.italic"),
+        axis.title.x = element_text(size = 9,face="bold.italic"),
+        axis.title.y = element_text(size = 9,face="bold.italic"),
+        axis.text = element_text(size = 7),
+        legend.text = element_text(size = 8,face="italic"))
+ggplotly(p5.1)
+ggplotly(p5.2)
+```
+
+## Pic 6
+
+```{r}
+medalcount <- olympic_athletes_events %>%
+          filter(!is.na(Medal)) %>% 
+          group_by(NOC, Medal, Event, Games) %>% 
+          summarize(isMedal = 1) %>%
+          group_by(NOC, Medal) %>% 
+          summarize(medal_count = sum(isMedal)) %>% 
+          left_join(noc_regions) %>%
+          rename(Team_nation = region) %>% 
+          select(Medal, Team_nation, medal_count) %>%
+          arrange(desc(medal_count))
+
+world_label <- world %>% 
+  group_by(region) %>% 
+  mutate(lat = mean(lat), long = mean(long)) %>% 
+  select(region, lat, long) %>% 
+  unique() %>% ungroup()
+
+world %>% left_join(
+    medalcount %>%
+    group_by(Team_nation) %>% # Team's total medal number over the years
+    summarize(Total = sum(medal_count)) %>% arrange(desc(Total)),
+    by = c('region' = 'Team_nation')) %>%
+    mutate(label = ifelse(Total < 800, "", region)) %>%
+    group_by(region) %>%
+    mutate(mean_long = mean(long), mean_lat = mean(lat)) %>%
+  ggplot(aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = Total)) + 
+  labs(x = "", y = "") + 
+  scale_fill_gradient(low = "white", high = "darkseagreen4") + 
+  ggtitle("Total Number of the Medals that Countries Win Over the Year") + 
+  stat_midpoint(aes(label = label, x = mean_long, y = mean_lat), geom = "text",size=2, color = "brown3") +
+  theme(plot.title = element_text(size = 9,face="bold.italic", color = "red3"),
+        axis.text = element_text(size = 7),
+        legend.title = element_text(size = 8,face="bold.italic"),
+        legend.text = element_text(size = 8,face="italic"))
+  
+```
+# Q4: What is the Participation Ratio of Men to Women changes over time? Is this ratio increased or decreased?
+## Pic 7
+
+```{r}
+yeartomod <- olympic_athletes_events %>% 
+              select(Year) %>% 
+              unique() %>%
+              filter((Year %% 4 > 0) & Year != 1906) %>% pull(Year)
+
+olympic_athletes_events %>% 
+  mutate(Year = ifelse(Year %in% yeartomod, Year + 2, Year)) %>%
+  group_by(Year, Sex) %>%
+  summarize(Athlete_number = length(unique(ID))) %>% arrange(Year) %>% 
+  ggplot(aes(x = Year, y = Athlete_number, group = Sex, color = Sex)) + 
+  geom_point(size = 2) + 
+  geom_line() + 
+  geom_smooth(method = "loess", formula = 'y ~ x', linetype = 3) + 
+  scale_color_manual(values= c("cornflowerblue", "deeppink2")) + 
+  theme_classic() + 
+  labs(x = "Year", y = "Athlete Number") +
+  ggtitle("Athletes attending Olympics over time \nregarding male and female athletes") + 
+  theme(plot.title = element_text(size = 10,face="bold.italic", color = "brown3"),
+        axis.title.x = element_text(size = 9,face="bold.italic"),
+        axis.title.y = element_text(size = 9,face="bold.italic"),
+        axis.text = element_text(size = 7),
+        legend.text = element_text(size = 8,face="italic"))  # +  transition_reveal(Year)
+```
+# Q5: Are athlete’s Age, Height and Weight related to their race results?
+## Pic 8:
+
+```{r}
+# Intuitively, use PCA to analyse the problem
+scaled_olympics <- olympic_athletes_events %>% na.omit() %>%
+  select(Team, Sex, Age, Height, Weight, Medal) %>%
+  mutate(across(where(is.numeric), ~round((.x-mean(.x))/sd(.x), 2))) %>%
+  mutate(Sex = ifelse(Sex == "M", 1, 0))
+pca <- prcomp(scaled_olympics[,3:5],center=T, retx=T)
+summary(pca)
+# Principal Component Loading
+mat_round <- function(matrix, n = 3) apply(matrix, 2, function(x) round(x, n))
+mat_round(pca$rotation)
+pc1 <- paste("PC1 =", paste(round(pca$rotation[,1], 2), "x", rownames(pca$rotation), collapse = " + "))
+pc2 <- paste("PC2 =", paste(round(pca$rotation[,2], 2), "x", rownames(pca$rotation), collapse = " + "))
+pc1;pc2
+```
+
+```{r}
+s <- summary(pca)
+df_pca <- data.frame(pca$x) %>%
+  mutate(Medal = scaled_olympics$Medal)
+xlab <- paste("PC 1 (", round(s$importance[2,1]*100, 1), "%)", sep = "")
+ylab <- paste("PC 2 (", round(s$importance[2,2]*100, 1), "%)", sep = "")
+# use PCA for clustering
+scores <- pca$x[,1:2]
+k <- kmeans(scores, centers = 3) 
+data_pca <- data.frame(scores) %>%
+  mutate(cluster = factor(k$cluster), Medal = scaled_olympics$Medal)
+
+# clusters with first 2 principle components
+scores <- data.frame(scores) %>%
+  mutate(cluster = factor(k$cluster), 
+         Medal = scaled_olympics$Medal,
+         Team = scaled_olympics$Team)
+
+# Score plot 
+ggplot(scores %>% head(25), aes(PC1, PC2, color = Medal, label = Medal)) +
+  geom_point() +
+  geom_text(nudge_y = .1, size = 2.5) +
+  guides(color="none") + # coord_equal() + 
+  coord_fixed() +
+  ggtitle("Score plot of first two principal components") +
+  labs(x = xlab, y = ylab,
+       subtitle = "PC1 = -0.21 x Age + -0.69 x Height + -0.7 x Weight\nPC2 = 0.98 x Age + -0.19 x Height + -0.11 x Weight") +
+  stat_ellipse(geom = "polygon", aes(fill = Medal),
+               alpha = 0.2, 
+               show.legend = TRUE,
+               level = 00.95) +
+  theme(
+  plot.title = element_text(color = "red", size = 11, face = "bold"),
+  plot.subtitle = element_text(color = "blue", size = 8),
+  plot.caption = element_text(color = "green", face = "italic", size = 8),
+  legend.title = element_text(color = "grey3", face = "bold.italic", size = 8),
+  legend.text = element_text(color = "grey3", face = "italic", size = 8),
+  axis.title = element_text(color = "grey3", face = "bold.italic", size = 9),
+  axis.text = element_text(color = "grey3", face = "italic", size = 7)
+)
+```  
+
+- The first two principal components have been contructed as:
+
+1. PC1 = -0.21 x Age + -0.69 x Height + -0.7 x Weight
+
+2. PC2 = 0.98 x Age + -0.19 x Height + -0.11 x Weight
+
+- Medal Results can not be ideally classifed by principal components composed with Age, Weight and Height, concerning the fact that the first two principals have already been efficient in explaining 93.5% information of Age, Weight and Height, yet Medal results still mixed together in the score plot.
+
+```{r}
+scaled_olympics[20:31,] %>%
+  ggplot(aes(Age, Height, label = Team)) +
+  geom_point() +
+  geom_abline(slope = pca$rotation[2,1]/pca$rotation[1,1], intercept = 0, color = "mediumpurple") +
+  geom_abline(slope = pca$rotation[2,2]/pca$rotation[1,2], intercept = 0, color = "cornflowerblue") +
+  annotate("text", x = .45, y = 1.2, label = "PC1", angle = 75, size = 3,
+           color = "mediumpurple")  +
+  annotate("text", x = -.4, y = 0, label = "PC2", angle = -10, size = 3,
+           color = "cornflowerblue") +
+  geom_text_repel(nudge_y = .1, size = 2.5) +
+  coord_equal() +
+  labs(title = "Scatterplot of scaled Olympics data with Principal Components") + 
+  theme(
+  plot.title = element_text(color = "brown3", size = 10, face = "bold"),
+  plot.subtitle = element_text(color = "blue", size = 8),
+  plot.caption = element_text(color = "green", face = "italic", size = 8),
+  legend.title = element_text(color = "grey3", face = "bold.italic", size = 8),
+  legend.text = element_text(color = "grey3", face = "italic", size = 8),
+  axis.title = element_text(color = "grey3", face = "bold.italic", size = 9),
+  axis.text = element_text(color = "grey3", face = "italic", size = 7)
+)
+```
+
+
+```{r warning=FALSE}
+p4.1<- olympic_athletes_events %>% 
+        mutate(Medal = ifelse(is.na(Medal), "No Medal", Medal)) %>%
+        ggplot(aes(x=Medal, y=Age,color=Medal,fill=Sex)) + 
+        geom_boxplot()+
+        scale_fill_manual(values = c('#999999', '#E69F00', '#56B4E9')) +
+        ggtitle("Boxplot for Age vs Medal", subtitle = " -- Concerning Gender") + 
+        theme(
+            plot.title = element_text(color = "brown3", size = 10, face = "bold.italic"),
+            plot.subtitle = element_text(color = "blue", size = 8),
+            plot.caption = element_text(color = "green", face = "italic", size = 8),
+            legend.title = element_text(color = "grey3", face = "bold.italic", size = 8),
+            legend.text = element_text(color = "grey3", face = "italic", size = 8),
+            axis.title = element_text(color = "grey3", face = "bold.italic", size = 9),
+            axis.text = element_text(color = "grey3", face = "italic", size = 7)
+        )
+p4.2<- olympic_athletes_events %>%
+        mutate(Medal = ifelse(is.na(Medal), "No Medal", Medal)) %>%
+        ggplot(aes(x=Medal, y=Height,color=Medal,fill=Sex)) + 
+        geom_boxplot()+
+        scale_fill_manual(values = c('#999999', '#E69F00', '#56B4E9')) +
+        ggtitle("Boxplot for Height vs Medal", subtitle = " -- Concerning Gender") + 
+        theme(
+            plot.title = element_text(color = "brown3", size = 10, face = "bold.italic"),
+            plot.subtitle = element_text(color = "blue", size = 8),
+            plot.caption = element_text(color = "green", face = "italic", size = 8),
+            legend.title = element_text(color = "grey3", face = "bold.italic", size = 8),
+            legend.text = element_text(color = "grey3", face = "italic", size = 8),
+            axis.title = element_text(color = "grey3", face = "bold.italic", size = 9),
+            axis.text = element_text(color = "grey3", face = "italic", size = 7)
+        )
+p4.3<- olympic_athletes_events %>% 
+        mutate(Medal = ifelse(is.na(Medal), "No Medal", Medal)) %>%
+        ggplot(aes(x=Medal, y=Weight,color=Medal,fill=Sex)) + 
+        geom_boxplot()+
+        scale_fill_manual(values = c('#999999', '#E69F00', '#56B4E9')) +
+        ggtitle("Boxplot for Weight vs Medal", subtitle = " -- Concerning Gender") + 
+        theme(
+            plot.title = element_text(color = "brown3", size = 10, face = "bold.italic"),
+            plot.subtitle = element_text(color = "blue", size = 8),
+            plot.caption = element_text(color = "green", face = "italic", size = 8),
+            legend.title = element_text(color = "grey3", face = "bold.italic", size = 8),
+            legend.text = element_text(color = "grey3", face = "italic", size = 8),
+            axis.title = element_text(color = "grey3", face = "bold.italic", size = 9),
+            axis.text = element_text(color = "grey3", face = "italic", size = 7)
+        )
+p4.1
+p4.2
+p4.3
+```
+
+
+

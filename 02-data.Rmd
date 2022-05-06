@@ -5,11 +5,11 @@ This project focuses on the topic of the Olympics. Our data are derived from Spo
 
 The following options were chosen for the datasets: 
 
-1) Data on medals & countries from the Summer and Winter Olympics dating back to 1896, with two main sheets of ‘Olympics’, ‘Olympics Athletes and Event’ on medal events and info of each athlete.
+-  Data on medals & countries from the Summer and Winter Olympics dating back to 1896, with two main sheets of ‘Olympics’, ‘Olympics Athletes and Event’ on medal events and info of each athlete.
 
-2) Data on Winter Olympics, with three main sheets of ‘Winter Olympic Medals’, ‘Alpine Skiing’ and ‘Winter Olympic Medal History’.
+-  Data on Winter Olympics, with three main sheets of ‘Winter Olympic Medals’, ‘Alpine Skiing’ and ‘Winter Olympic Medal History’.
 
-3) Data on Paralympics, with two main sheets of ‘ParalymicsData’ and ‘UKparalymics’
+-  Data on Paralympics, with two main sheets of ‘ParalymicsData’ and ‘UKparalymics’
 
 Since the goal is mainly focused on evaluating the evolution of Olympic Games by different factors and aspects over the years, the 'Olympics Athletes and Event' dataset was chosen. It not only includes data of the summer and winter Olympics, but also has specific athlete information, such as their age, weight and height. Based on these variables, we can analyze whether their age, weight and height are related to the competition results, while other dataset failed to provide the information needed.
 Moreover, since the 2022 Winter Olympics was held this year, The Alpine Skiing,one of the interesting winter Olympics events, was investigated. THerefore, the ‘Alpine Skiing’ dataset was also selected. 
@@ -33,7 +33,7 @@ Here are some basic information about our dataset 'alpine skiing':
 
 1. Brief introduction about this dataset:
 
-This is a dataset about the Alpine skiing Event in the Winter Olympic Games, including all the Alpine skiing Games from Athens 1896 to Rio 2016. It includes not only the year and city of each Olympics games, but also each athlete's basic information. 
+This is a dataset about the Alpine skiing Event in the Winter Olympic Games, including all the Alpine skiing Games from Athens 1896 to Rio 2016. The dominant information we would use in this dataset is Event, Season, Gender, and Nation, with many missing values in time-seconds related terms. Still, luckily we only won't pay much attention to these time-related columns.
 
 2. Types of variables
 
