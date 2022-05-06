@@ -6,3 +6,23 @@ site: bookdown::bookdown_site
 ---
 
 # Introduction
+
+The Olympics are the leading international sporting events featuring summer and winter sports competitions in which thousands of athletes around the world participate in a variety of competitions. It is considered the world's foremost sports competition with more than 200 nations participating. Its origin can be traced back to the Greek empire, at around 3,000 years ago, which consisted only of sprint races, and was held in Greek city Olympia only accessible to freeborn Greek people (Young & Abraham, 2020). It has grown since then and become a hub for all the athletes worldwide to demonstrate their abilities in more than 28 individual sporting contests.
+
+Every two years the Olympics and its media exposure provide athletes with the chance to attain national and sometimes international fame. The Games also provide an opportunity for the host city and country to showcase themselves to the world. Thus, it is one of the main international events and also a matter of prestige for countries. Therefore each country tries to give their best performance during the event.
+
+The primary objective of this project is to analyze the large Olympic dataset using Exploratory Data Analysis to evaluate the evolution of Olympic Games over the past years. This analysis will provide detailed and accurate information regarding various factors which leads to see how the historical events have affected the specifics of Olympics and how it has been changing till date. 
+
+The following questions are some major focus on the interesting aspects of Olympic history which tends to have a great impact on the improvement of it.
+
+1. As economics exploded, what was the development of Olympics from 1986 to 2016? 
+
+2. Since this year held the 2022 Winter Olympics, what about the development of Alpine Skiing in the Winter Olympics?
+
+3. Which countries are the most dominant over the history of the Olympics?
+
+4. What is the Participation Ratio of Men to Women changes over time?
+
+5. Are athlete’s Age, Height and Weight related to their race results?
+
+
