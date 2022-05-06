@@ -1,1 +1,36 @@
 # Data transformation
+
+olympic_athletes_events <- read_csv("Olympic Athletes and Events.csv", col_types = cols(
+                   ID = col_character(),
+                   Name = col_character(),
+                   Sex = col_factor(levels = c("M","F")),
+                   Age =  col_integer(),
+                   Height = col_double(),
+                   Weight = col_double(),
+                   Team = col_character(),
+                   NOC = col_character(),
+                   Games = col_character(),
+                   Year = col_integer(),
+                   Season = col_factor(levels = c("Summer","Winter")),
+                   City = col_character(),
+                   Sport = col_character(),
+                   Event = col_character(),
+                   Medal = col_factor(levels = c("Gold","Silver","Bronze"))
+                 )
+)
+
+noc_regions <- read.csv("~/Documents/STAT_5293/final project/noc_regions.txt") 
+alpine_skiing <- read_delim("Alpine Skiing.csv", 
+                            delim = ";", 
+                            escape_double = FALSE, 
+                            trim_ws = TRUE) %>% 
+                 mutate_at(vars(Gender, Rank), 
+                           funs(factor))
+world <- map_data("world")
+
+olympic_athletes_events <- olympic_athletes_events %>% 
+                left_join(noc_regions, by = "NOC") %>% 
+                select(-notes) %>%
+                mutate(continent = countrycode(sourcevar = region,
+                                               origin = "country.name",
+                                               destination = "continent"))
