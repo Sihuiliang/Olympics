@@ -1,6 +1,7 @@
 # Data sources
 
 
+
 This project focuses on the topic of the Olympics. Our data are derived from [Sports Viz Sunday](https://www.sportsvizsunday.com/olympics-winter-olympics), which is a platform for people who are interested in sport and exploring the sports data and visualization in the world. 
 
 The following options were chosen for the datasets: 
@@ -10,6 +11,17 @@ The following options were chosen for the datasets:
 -  Data on Winter Olympics, with three main sheets of ‘Winter Olympic Medals’, ‘Alpine Skiing’ and ‘Winter Olympic Medal History’.
 
 -  Data on Paralympics, with two main sheets of ‘ParalymicsData’ and ‘UKparalymics’
+
+This project focuses on the topic of the Olympics. Our data are derived from Sports Viz Sunday, which is a platform for people who are interested in sport and exploring the sports data and visualization in the world. 
+
+The following options were chosen for the datasets: 
+
+1) Data on medals & countries from the Summer and Winter Olympics dating back to 1896, with two main sheets of ‘Olympics’, ‘Olympics Athletes and Event’ on medal events and info of each athlete.
+
+2) Data on Winter Olympics, with three main sheets of ‘Winter Olympic Medals’, ‘Alpine Skiing’ and ‘Winter Olympic Medal History’.
+
+3) Data on Paralympics, with two main sheets of ‘ParalymicsData’ and ‘UKparalymics’
+
 
 Since the goal is mainly focused on evaluating the evolution of Olympic Games by different factors and aspects over the years, the 'Olympics Athletes and Event' dataset was chosen. It not only includes data of the summer and winter Olympics, but also has specific athlete information, such as their age, weight and height. Based on these variables, we can analyze whether their age, weight and height are related to the competition results, while other dataset failed to provide the information needed.
 Moreover, since the 2022 Winter Olympics was held this year, The Alpine Skiing,one of the interesting winter Olympics events, was investigated. THerefore, the ‘Alpine Skiing’ dataset was also selected. 
@@ -28,6 +40,7 @@ Numerical Variables: Age, Height, Weight
 3. Number of records: 
 
 271,116 Rows, 15 Columns
+
 
 Here are some basic information about our dataset 'alpine skiing': 
 
