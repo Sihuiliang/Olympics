@@ -1,6 +1,8 @@
 # Interactive component
 
-## Q3: Which countries are the most dominant over the history of Olympics?
+## Reference Q3: Which countries are the most dominant over the history of Olympics?
+
+### Interactive 1
 
 - Simple Tutorial:
 
@@ -108,11 +110,11 @@ leaflet(world_formap) %>%
 ```
 
 
-# Q4: What is the Participation Ratio of Men to Women changes over time? Is this ratio increased or decreased?
+## Reference Q4: What is the Participation Ratio of Men to Women changes over time? Is this ratio increased or decreased?
 
-## Interactive 2
+### Interactive 2
 
-- This is an animated version of the evolution for female and male athletes attending Olympics over time.
+This is an animated version of the evolution for female and male athletes attending Olympics over time.
 
 ```{r}
 olympic_athletes_events %>% 
@@ -130,9 +132,9 @@ olympic_athletes_events %>%
   transition_reveal(Year)
 ```
 
-## Interactive 3
+### Interactive 3
 
-- Scatter-plot of female and male athletes attending Olympics over time.
+Scatter-plot of female and male athletes attending Olympics over time.
 
 1. Labels include the information of country, attending female athletes number, attending male athletes number and female versus male athlete ratio (*100). 
 
@@ -191,4 +193,14 @@ fig
 
 ```
 
+In the Olympics games of 2014 and 2016, the female participants even reached the highest peak.
+
+Overall, as the time increases, the number of Male participants is always less than Female participants, even though the number of Female participants has improved a lot in Olympics.
+
+Even though we have shown increased participation of females in the Olympics movement, not all countries can pay attention to sexism and invest equally in female athletes.
+
+This bubble graph shows the ratio of female athletes versus male athletes from different nations over the 120-year Olympics. The color represents additional years of the Olympics games. The bigger the bubble is, the higher the balance is.
+From the 1900s to the 1950s, the ratio was relatively small, which meant low participation of females. Since the 1960s, there has been a dramatic improvement in female participation.
+
+In 2014 and 2016, gray bubbles reached the biggest, representing that the female participants reached the highest peak.
 

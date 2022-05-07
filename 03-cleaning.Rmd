@@ -1,5 +1,52 @@
 # Data transformation
 
+1.  Transform all columns of `olympic_athletes_events` to characters. Besides, 'Season,' 'Sex,' and 'Medal,' respectively, have 2 to 3 distinct values and should be converted to factors.
+
+2.  For `alpine_skiing,` transform 'Gender' and 'Rank' into factors. Leave other variables be characters.
+
+3. `noc_region` is a table containing NOC code and common names of countries and regions. Combining `map_data("world")` and s continent information from `countrycode` package, we can retrieve longitude, latitude and continental information for each row in `olympic_athletes_events`.
+
+Transformation process can be referred as follows:
+
+```
+olympic_athletes_events <- read_csv("Olympic Athletes and Events.csv", col_types = cols(
+                   ID = col_character(),
+                   Name = col_character(),
+                   Sex = col_factor(levels = c("M","F")),
+                   Age =  col_integer(),
+                   Height = col_double(),
+                   Weight = col_double(),
+                   Team = col_character(),
+                   NOC = col_character(),
+                   Games = col_character(),
+                   Year = col_integer(),
+                   Season = col_factor(levels = c("Summer","Winter")),
+                   City = col_character(),
+                   Sport = col_character(),
+                   Event = col_character(),
+                   Medal = col_factor(levels = c("Gold","Silver","Bronze"))
+                 )
+)
+
+noc_regions <- read.csv("noc_regions.txt") 
+alpine_skiing <- read_delim("Alpine Skiing.csv", 
+                            delim = ";", 
+                            escape_double = FALSE, 
+                            trim_ws = TRUE) %>% 
+                 mutate_at(vars(Gender, Rank), 
+                           funs(factor))
+world <- map_data("world")
+
+olympic_athletes_events <- olympic_athletes_events %>% 
+                left_join(noc_regions, by = "NOC") %>% 
+                select(-notes) %>%
+                mutate(continent = countrycode(sourcevar = region,
+                                               origin = "country.name",
+                                               destination = "continent"))
+
+```
+
+
 ```{r}
 library(readr)
 library(readxl)

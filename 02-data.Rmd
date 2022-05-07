@@ -1,7 +1,7 @@
 # Data sources
 
 
-This project focuses on the topic of the Olympics. Our data are derived from Sports Viz Sunday, which is a platform for people who are interested in sport and exploring the sports data and visualization in the world. 
+This project focuses on the topic of the Olympics. Our data are derived from [Sports Viz Sunday](https://www.sportsvizsunday.com/olympics-winter-olympics), which is a platform for people who are interested in sport and exploring the sports data and visualization in the world. 
 
 The following options were chosen for the datasets: 
 

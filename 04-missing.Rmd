@@ -1,11 +1,11 @@
 # Missing values
 
-# 1. Alpine_skiing.csv 
+## Alpine_skiing.csv 
 
-## Describe missing pattern by row -------------------------------------------------------------
+**Describe missing pattern by row**
 
 ```{r}
-rowSums(is.na(alpine_skiing)) %>% sort(decreasing = TRUE) %>% head(40)
+# rowSums(is.na(alpine_skiing)) %>% sort(decreasing = TRUE) %>% head(40)
 tidyskiing <- alpine_skiing %>% 
     gather(key, value, -`Race-ID`) %>% 
     mutate(missing = ifelse(is.na(value), "yes", "no"))
@@ -15,45 +15,55 @@ ggplot(tidyskiing, aes(x = key, y = fct_rev(`Race-ID`), fill = missing)) +
   ggtitle("Alpine_Skiing with NAs added") +
   scale_fill_viridis_d() + # discrete scale
   theme_bw() + 
-  theme(axis.text.x = element_blank(),
-        axis.text.y = element_blank())
+  theme(plot.title = element_text(size = 11, face = "bold.italic"),
+        plot.subtitle = element_text(color = "blue", size = 8),
+        plot.caption = element_text(color = "green", face = "italic", size = 8),
+        legend.title = element_text(color = "grey3", face = "bold.italic", size = 8),
+        legend.text = element_text(color = "grey3", face = "italic", size = 8),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank()) 
 ```
         
 - There are several columns with almost no values or missing percentages larger than 50% for the Alpine Skiing dataset, which means these columns could be neglected when using this dataset. While for some columns, their partial missing patterns show an average missing percentage, which indicates that imputation might be helpful when analyzing our data. 
         
         
-## Describe missing pattern by column -------------------------------------------------------------
+**Describe missing pattern by column **
 
 ```{r}
-colSums(is.na(Alpine_Skiing)) %>% sort(decreasing = TRUE)
-tidyskiing <- Alpine_Skiing %>% 
+colSums(is.na(alpine_skiing)) %>% sort(decreasing = TRUE)
+tidyskiing <- alpine_skiing %>% 
     gather(key, value, -`Race-ID`) %>% 
     mutate(missing = ifelse(is.na(value), "yes", "no")) %>%
     group_by(key) %>%
     mutate(missing_count = sum(missing=="yes"),
-           missing_perc = round(missing_count/dim(Alpine_Skiing)[1], 4))
+           missing_perc = round(missing_count/dim(alpine_skiing)[1], 4))
 
 tidyskiing %>% 
   ggplot(aes(x = key, y = as.numeric(missing_perc))) + 
   geom_bar(stat="identity", fill="steelblue") +
   ggtitle("Missing Number by Columns") +
   xlab("") + ylab('Missing Number') + 
-  theme(axis.text.x = element_text(angle = 90, hjust=1))
+  theme(axis.text.x = element_text(angle = 90, hjust=1),
+        plot.title = element_text(size = 11, face = "bold.italic"),
+        plot.subtitle = element_text(color = "blue", size = 8),
+        plot.caption = element_text(color = "green", face = "italic", size = 8),
+        legend.title = element_text(color = "grey3", face = "bold.italic", size = 8),
+        legend.text = element_text(color = "grey3", face = "italic", size = 8)) 
 ```
 
 - For Alpine_Skiing, essential columns reflecting demographic of athletes and races information, like latitude/longitude/season/athlete/nation/gender are not missing. Yet there are significant missing patterns for some extra columns, like 'FIS Points'/'Bib (starter no). And columns with the most significant missing pattern are time and time differences columns.
 
-## Describe Missing pattern by value -------------------------------------------------------------
+**Describe Missing pattern by value**
 
 ```{r}
 # Check missing 'Fédération Internationale de Ski' Score (i.e. FIS Score) by Season
-percent_missing <- Alpine_Skiing %>% group_by(`Race-ID`, Season) %>%
+percent_missing <- alpine_skiing %>% group_by(`Race-ID`, Season) %>%
   summarize(num_races = n(), num_na = sum(is.na(`Difference_Total_datetime`))) %>%
   mutate(percent_na = round(num_na/num_races, 2)) %>%
   arrange(-percent_na)
 percent_missing #%>% head(10)
 
-percent_missing_FIS <- Alpine_Skiing %>% group_by(Season) %>%
+percent_missing_FIS <- alpine_skiing %>% group_by(Season) %>%
   summarize(num_years = n(), num_na = sum(is.na(`FIS Points`))) %>%
   mutate(percent_na = round(num_na/num_years, 2)) %>% 
   arrange(Season)
@@ -68,22 +78,34 @@ percent_missing_FIS %>%
   scale_fill_manual(values = patterncolor) + 
   xlab('Season') + ylab('Missing Percentage') + 
   scale_x_binned() + 
-  ggtitle('Missing Percentage of FIS Score for athletes in each Season')
+  ggtitle('Missing Percentage of FIS Score for athletes in each Season') +
+  theme(axis.text.x = element_text(angle = 90, hjust=1),
+        plot.title = element_text(size = 11, face = "bold.italic"),
+        plot.subtitle = element_text(color = "blue", size = 8),
+        plot.caption = element_text(color = "green", face = "italic", size = 8),
+        legend.title = element_text(color = "grey3", face = "bold.italic", size = 8),
+        legend.text = element_text(color = "grey3", face = "italic", size = 8)) 
 ```
 
 - Check missing patterns of the FIS Score of an athlete along the Seasons. Set 20% as a threshold for the missing percentage, yet we find that FIS Score's absent rate among all the Season bins is constantly more significant than 20%.
 
-# 2. 'Olympic Athletes and Events.csv' 
+## Olympic Athletes and Events.csv 
+
+- `gg_miss_upset` shows the missing values for Medal, Weight, Height, Age, and continent. Regarding the Y-axis bar chart, flipped y-bars indicate the total number of missing for each of the five variables. For instance, over 85% of 'Medal' is missing. Yet this is reasonable since this dataset includes all the attending athletes. For Weight and Height, they respectively miss 25% of the data. In comparison, 'Age' cuts approximately 3% of data and 'continent' 0.2%.
+
 
 ```{r}
 gg_miss_upset(olympic_athletes_events)
+```
+
+- `gg_miss_span` shows the missing span for variables. For Weight, Height, and Age, these plots indicate a uniform nonexistent span for the three variables.
+
+```{r}
 olympic_athletes_events %>% gg_miss_span(Weight, span_every = 10000)
 olympic_athletes_events %>% gg_miss_span(Height, span_every = 10000)
 olympic_athletes_events %>% gg_miss_span(Age, span_every = 10000)
 ```
-- `gg_miss_upset` shows the missing values for Medal, Weight, Height, Age, and continent. Regarding the Y-axis bar chart, flipped y-bars indicate the total number of missing for each of the five variables. For instance, over 85% of 'Medal' is missing. Yet this is reasonable since this dataset includes all the attending athletes. For Weight and Height, they respectively miss 25% of the data. In comparison, 'Age' cuts approximately 3% of data and 'continent' 0.2%.
 
-- `gg_miss_span` shows the missing span for variables. For Weight, Height, and Age, these plots indicate a uniform nonexistent span for the three variables.
 
 
 
