@@ -1,1 +1,665 @@
 # Results
+
+## Q1: As economics exploded, what was the development of the 120 years Olympics from 1986 to 2016?
+### Picture 1
+
+These graphs are drawn from 3 different aspects over the Olympics movement, which include the total number of athletes, the total anticipated teams and the number of different sports. Since there are Summer Olympics and Winter Olympics, two lines of each season were graphed.
+
+```{r}
+numcount <- olympic_athletes_events %>% 
+            group_by(Year, Season) %>%
+            summarize(Athletes = length(unique(ID)), 
+                      Teams = length(unique(Team)),
+                      Sports = length(unique(Sport)))
+
+
+p1 <- ggplot(numcount, aes(x=Year, y=Athletes, group=Season, color=Season)) +
+          geom_point(size=1.8) +
+          geom_line() +
+          scale_color_manual(values=c("#cbc9e2","#2b8cbe")) +
+          xlab("") +  
+        annotate("text", x=c(1932,1956,1976,1980),
+                 y=c(2000,2750,6800,4700),
+                 label=c("L.A. 1932","Melbourne 1956","Montreal 1976","Moscow 1980"),
+                 size=2.5) +
+        annotate("text",x=c(1916,1942),y=c(9000,9000),
+                 label=c("WWI","WWII"), size=3.5, color="sienna1") +
+        geom_segment(mapping=aes(x=1914,y=8000,xend=1918,yend=8000),color="sienna1", size=1.5) +
+        geom_segment(mapping=aes(x=1939,y=8000,xend=1945,yend=8000),color="sienna1", size=1.5) + 
+        theme(legend.position="bottom")
+p2 <- ggplot(numcount, aes(x=Year, y=Teams, group=Season, color=Season)) +
+        geom_point(size=1.8) +
+        geom_line() +
+        scale_color_manual(values=c("#cbc9e2","#2b8cbe")) +
+        xlab("") +  
+        # annotate("text", x=c(1932,1976,1980),
+        #          y=c(62,110,85),
+        #          label=c("L.A. 1932","Montreal 1976","Moscow 1980"),
+        #          size=2.5) + 
+        theme(legend.position="bottom")
+p3 <- ggplot(numcount, aes(x=Year, y=Sports, group=Season, color=Season)) +
+        geom_point(size=1.8) +
+        geom_line() +
+        scale_color_manual(values=c("#cbc9e2","#2b8cbe")) + 
+        theme(legend.position="bottom")
+
+tg <- grid::textGrob('Athletes, Teams and Events over Years', 
+                     gp = gpar(fontsize = 13, fontface = 'bold'))
+sg <- textGrob('Attendence Number vs Year', 
+               gp = gpar(fontsize = 10))
+laym <- rbind(rep(1,3), rep(2,3), (3:(3+2)))
+plot_list <- list(p1, p2, p3)
+g <- c(list(tg),list(sg),plot_list)
+grid.arrange(grobs=g,layout_matrix=laym,heights=c(1, 1,10))
+```
+
+**These graph have two interesting highlights**:
+
+- First, According to the data resource page, there are two gap periods in which the Olympics games were not held. The first period is World War I, from 1912 to 1920, and the second period is World War II, from 1936 to 1948.
+
+- Second, there are several drop points during the history of Summer Olympics:
+
+**L.A.1932**: The Games location was far away from the athletes and it was in the midst of the Great Depression, so many athletes were unable to afford the trip to attend.
+
+[Melbourne 1956](https://en.wikipedia.org/wiki/1956_Summer_Olympics): There were several boycotts. First, Egypt, Iraq, Cambodia and boycotted due to the Suez Crisis when Egypt was invaded by Israel, the UK and France. Second, The Netherlands, Spain and Switzerland boycotted in protest at the Soviet Union. Third, China boycotted the event because Taiwan had been allowed to compete.
+
+[Montreal 1976](https://en.wikipedia.org/wiki/1976_Summer_Olympics): 29 countries boycotted the Games due to the refusal of the IOC to ban New Zealand, after the New Zealand national rugby union team had toured South Africa earlier in 1976.
+
+**Moscow 1980**: 66 countries boycotted the Games because of the Soviet-Afghan War.
+
+From 1896 to 2016, the total number of athletes, the anticipated teams and the total number of sports increased. The development of Olympics games for both seasons has rapidly increased and is stable since the 2000s.
+For Summer Olympics, the Athletes, Teams and Sports grew rapidly in the 1900s and were stable in the 2000s. However, it doesn’t seem likely to get a great change in the future since it may reach a saturation point.
+ 
+Also, according to the 3 diagrams above, It can be concluded that the summer sport has a higher number of participants, teams and variety than the Winter Olympics.This is due to the limitation that most countries do not have the access to the snow based on the weather parameter. Even though the development of the Winter Olympics didn’t perform better than Summer Olympics, the Winter Olympics tend to not grow in the future based on this limitation.  
+### Picture 2
+
+The 120-year Olympics can be split into several parts based on the same duration, for instance, 1896-1932, 1932-1956, 1956-1976, and 1976-1980. Referring to the first graph, we highlight four Olympics events respectively in 1932, 1956, 1976, and 1980 to analyze and draw choropleth maps to visualize the geographic distribution of athletes at each Olympics Games.
+
+```{r}
+world <- map_data("world")
+losangeles <- olympic_athletes_events %>% 
+  filter(Year == 1932 & Season == "Summer") %>%
+  group_by(region) %>%
+  summarize(LosAngeles = length(unique(ID))) 
+
+# L.A. 1932 Summer Olympic
+data1 <- world %>% left_join(
+  tibble(region=unique(world$region))) %>% 
+    left_join(losangeles, by="region") %>%
+  mutate(LosAngeles = ifelse(is.na(LosAngeles), 0, LosAngeles)) 
+
+data1 %>% 
+  ggplot(aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = LosAngeles)) +
+  labs(title = "The Number of Athletes globally Participated in Los Angeles 1932",
+       x = NULL, y=NULL) +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        panel.background = element_rect(fill = "lightsteelblue4"),
+        plot.title = element_text(hjust = 0.5)) +
+  guides(fill=guide_colourbar(title="Athletes")) +
+  scale_fill_gradient(low="white",high="orchid3") +
+  theme(plot.title = element_text(size = 10,face="bold.italic", color = "red3"),
+        legend.title = element_text(size = 8,face="bold.italic", color = "black"),
+        legend.text  = element_text(size = 7,face="italic", color = "black"))
+```
+
+```{r}
+# Melbourne 1956 Summer Olympic
+melbourne <- olympic_athletes_events %>% 
+  filter(Year == 1956 & Season == "Summer") %>%
+  group_by(region) %>%
+  summarize(Melbourne = length(unique(ID)))
+
+data2 <- world %>% left_join(
+          tibble(region=unique(world$region))) %>% 
+          left_join(melbourne, by="region") %>%
+          mutate(Melbourne = ifelse(is.na(Melbourne), 0, Melbourne)) 
+
+data2 %>% 
+  ggplot(aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = Melbourne)) +
+  labs(title = "The Number of Athletes globally Participated in Melbourne 1956",
+       x = NULL, y=NULL) +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        panel.background = element_rect(fill = "lightsteelblue4"),
+        plot.title = element_text(hjust = 0.5)) +
+  guides(fill=guide_colourbar(title="Athletes")) +
+  scale_fill_gradient(low="white",high="orchid3") + 
+  theme(plot.title = element_text(size = 10,face="bold.italic", color = "red3"),
+        legend.title = element_text(size = 8,face="bold.italic", color = "black"),
+        legend.text  = element_text(size = 7,face="italic", color = "black")) 
+```
+
+```{r}
+# Montreal 1976 Summer Olympic
+montreal <- olympic_athletes_events %>% 
+  filter(Year == 1976 & Season == "Summer") %>%
+  group_by(region) %>%
+  summarize(Montreal = length(unique(ID)))
+
+data3 <- world %>% left_join(
+          tibble(region=unique(world$region))) %>% 
+          left_join(montreal, by="region") %>%
+          mutate(Montreal = ifelse(is.na(Montreal), 0, Montreal)) 
+
+data3 %>% 
+  ggplot(aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = Montreal)) +
+  labs(title = "The Number of Athletes globally Participated in Montreal 1976",
+       x = NULL, y=NULL) +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        panel.background = element_rect(fill = "lightsteelblue4"),
+        plot.title = element_text(hjust = 0.5)) +
+  guides(fill=guide_colourbar(title="Athletes")) +
+  scale_fill_gradient(low="white",high="orchid3") + 
+  theme(plot.title = element_text(size = 10,face="bold.italic", color = "red3"),
+        legend.title = element_text(size = 8,face="bold.italic", color = "black"),
+        legend.text  = element_text(size = 7,face="italic", color = "black")) 
+```
+
+```{r}
+# Moscow 1980 Summer Olympic
+moscow <- olympic_athletes_events %>% 
+  filter(Year == 1980 & Season == "Summer") %>%
+  group_by(region) %>%
+  summarize(Moscow = length(unique(ID)))
+
+data4 <- world %>% left_join(
+          tibble(region=unique(world$region))) %>% 
+          left_join(moscow, by="region") %>%
+          mutate(Moscow = ifelse(is.na(Moscow), 0, Moscow)) 
+
+data4 %>% 
+  ggplot(aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = Moscow)) +
+  labs(title = "The Number of Athletes globally Participated in Moscow 1980",
+       x = NULL, y=NULL) +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        panel.background = element_rect(fill = "lightsteelblue4"),
+        plot.title = element_text(hjust = 0.5)) +
+  guides(fill=guide_colourbar(title="Athletes")) +
+  scale_fill_gradient(low="white",high="orchid3") + 
+  theme(plot.title = element_text(size = 10,face="bold.italic", color = "red3"),
+        legend.title = element_text(size = 8,face="bold.italic", color = "black"),
+        legend.text  = element_text(size = 7,face="italic", color = "black")) 
+``` 
+
+
+These four graphs above show the geographic distribution of the Olympics athletes from different nations in L.A., Melbourne, Montreal and Moscow Olympics. With the improvement of society overtime, it tends to show that the number of participants is increasing, and the geographic distribution of the Olympics has expanded a lot. However, there are still some nations that do not have a lot of participants in 2016, such as Africa, the Middle East and South America, etc. These countries share the same characteristics that they were underdeveloped countries.
+
+
+## Q2:  Since the 2022 Winter Olympics was held this year, what about the development of Alpine Skiing in the Winter Olympics?
+### Picture 3
+
+Alpine skiing is one of the Winter Olympics’ signature competitions, which has been contested at every Winter Olympics since 1936 Garmisch-Partenkirchen.
+
+The only event that year was a combined competition of both downhill and slalom. In 1948, this was held along with separate downhill and slalom races. Four years later, the giant slalom was added, and in 1988, the super giant slalom became a fourth separate event.
+
+Now, it consists of downhill, slalom, giant slalom, super-g and combined events.
+[See here]([https://olympics.com/en/sports/alpine-skiing/])
+
+```{r}
+p1.1 <- olympic_athletes_events %>% 
+      filter(Sport == "Alpine Skiing") %>%
+      group_by(Year) %>%
+      summarize(Athletes = length(unique(Name)),
+                Nations = length(unique(NOC)),
+                Events = length(unique(Event))
+      ) %>% ggplot(aes(x = Year, y = Nations)) +
+      geom_point(size = 2) +
+      geom_line() + xlab("")
+
+p2.1 <- olympic_athletes_events %>% 
+      filter(Sport == "Alpine Skiing") %>%
+      group_by(Year) %>%
+      summarize(Athletes = length(unique(Name)),
+                Nations = length(unique(NOC)),
+                Events = length(unique(Event))
+      ) %>% ggplot(aes(x = Year, y = Athletes)) +
+      geom_point(size = 2) +
+      geom_line() + xlab("")
+
+p3.1 <- olympic_athletes_events %>% 
+      filter(Sport == "Alpine Skiing") %>%
+      group_by(Year) %>%
+      summarize(Athletes = length(unique(Name)),
+                Nations = length(unique(NOC)),
+                Events = length(unique(Event))
+      ) %>% ggplot(aes(x = Year, y = Events)) +
+      geom_point(size = 2) +
+      geom_line() + xlab("")
+
+tg <- grid::textGrob('Countries attending Apline Skiing Competitions ', gp = gpar(fontsize = 13, fontface = 'bold'))
+sg <- textGrob('Attendence Number vs Year', gp = gpar(fontsize = 10))
+laym <- matrix(seq_len(5), ncol = 1)
+plot_list <- list(p1.1, p2.1, p3.1)
+g <- c(list(tg),list(sg),plot_list)
+grid.arrange(grobs=g,layout_matrix=laym,heights=c(1,0.7,3,3,3)) 
+```
+
+### Picture 4
+
+According to the figure above, it shows that the nations, Athletes and events have an increasing general trend with the increase in years. However, there were some fluctuations during 1960 and 1992. When both the number of the athletes and nations were decreasing during that time phrase, the number of events remained at a constant slope. This shows that the the nations and athletes tend to have some direct connection between each other, and independent from the number of events that was held during the olympics.  
+
+```{r}
+p3.1 <- alpine_skiing %>% group_by(Season, Event) %>%
+  summarize(Nations = length(unique(Nation)), 
+            # Codexs = length(unique(Codex)),
+            Athletes = length(unique(Athlete))) %>%
+  ggplot(aes(x = Season, y = Athletes)) + 
+  geom_line(color = "grey") + geom_point(aes(color = Event)) +
+  xlab("Year") + 
+  facet_wrap(~ Event) +
+  scale_color_brewer(direction = -1) + theme_dark() +
+  labs(title = "The number of athletes attending Alpine Skiing events over times\n four major Alpine Skiing events") + 
+  theme(plot.title = element_text(size = 10,face="bold.italic", color = "grey3"),
+        axis.title.x = element_text(size = 9,face="bold.italic"),
+        axis.title.y = element_text(size = 9,face="bold.italic"),
+      legend.title = element_text(size = 8,face="bold.italic", color = "black"),
+      legend.text  = element_text(size = 7,face="italic", color = "black")) 
+
+p3.2 <- alpine_skiing %>% group_by(Season, Event) %>%
+  summarize(Nations = length(unique(Nation)), 
+            # Codexs = length(unique(Codex)),
+            Athletes = length(unique(Athlete))) %>%
+  ggplot(aes(x = Season, y = Nations)) + 
+  geom_line(color = "grey") + geom_point(aes(color = Event)) +
+  facet_wrap(~ Event) + xlab("Year") +
+  scale_colour_brewer(palette = "Greens") + theme_grey() +
+    labs(title = "The number of Nations attending Alpine Skiing events over times\n four major Alpine Skiing events") + 
+  theme(plot.title = element_text(size = 10,face="bold.italic", color = "grey3"),
+        axis.title.x = element_text(size = 9,face="bold.italic"),
+        axis.title.y = element_text(size = 9,face="bold.italic"),
+      legend.title = element_text(size = 8,face="bold.italic", color = "black"),
+      legend.text  = element_text(size = 7,face="italic", color = "black")) 
+
+
+p3.0 <- alpine_skiing %>% group_by(Season) %>%
+  summarize(Nations = length(unique(Nation)), 
+            # Codexs = length(unique(Codex)),
+            Athletes = length(unique(Athlete))) %>%
+  ggplot(aes(x = Season, y = Athletes)) + 
+  geom_line(color = "skyblue3", size = 1) +  #geom_point(aes(color = Event)) +
+  # facet_wrap(~ Event) +
+  scale_color_brewer(direction = -1) + theme_grey() + 
+  xlab("Year") +  ylab("Athlete Number") + 
+  theme(axis.text.y = element_text(size = 5),
+        axis.text.x = element_text(size = 5))
+p3.1
+p3.2
+```
+
+These following two diagrams show the relationship between the number of nations participating in different events over time and the number of athletes participating in different events over time. The number of athletics and the number of nations tend to share the same diagram pattern. Moreover, in 1995, there was a large increase in the number of participants in athletics and nations in each different individual event. This data shows more and more winter sports were started to get accepted and appreciated by more people in that year. 
+
+## Q3: Which countries are the most dominant over the history of Olympics?
+### Picture 5
+
+```{r}
+# Medals for Olympics
+lev_teams2 <- olympic_athletes_events %>% 
+  filter(!is.na(Medal))%>% 
+  group_by(Team, Medal) %>%
+  summarize(Count = length(Medal)) %>%
+  group_by(Team) %>%
+  summarize(Total = sum(Count)) %>%
+  arrange(desc(Total)) %>% select(Team) 
+
+p5.1 <- olympic_athletes_events %>% 
+  filter(!is.na(Medal))%>% 
+  filter(Team %in% (lev_teams2$Team[1:25])) %>%
+  group_by(Team, Medal) %>%
+  summarize(Count = length(Medal)) %>%
+  mutate(Team = ifelse(is.na(Team), "United States", Team)) %>%
+  mutate(Team = forcats::fct_rev(factor(Team, levels = lev_teams2$Team[1:30]))) %>%
+  ggplot(aes(Team, Count, fill = Medal)) +
+  geom_col() + coord_flip() +
+  scale_fill_manual(values = c("palegoldenrod", "plum3", "rosybrown4")) + 
+  ggtitle("Historical medal counts for Olympics from 1896 to 2016") +
+  theme(plot.title = element_text(size = 9,face="bold.italic"),
+        axis.title.x = element_text(size = 9,face="bold.italic"),
+        axis.title.y = element_text(size = 9,face="bold.italic"),
+        axis.text = element_text(size = 7),
+        legend.text = element_text(size = 8,face="italic"))
+
+# Medals for Alpine Skiing
+lev_teams <- olympic_athletes_events %>% 
+  filter(!is.na(Medal) & Sport == "Alpine Skiing")%>% 
+  group_by(Team, Medal) %>%
+  summarize(Count = length(Medal)) %>%
+  group_by(Team) %>%
+  summarize(Total = sum(Count)) %>%
+  arrange(Total) %>% pull(Team)
+
+p5.2 <- olympic_athletes_events %>% 
+  filter(!is.na(Medal) & Sport == "Alpine Skiing")%>% 
+  group_by(Team, Medal) %>%
+  summarize(Count = length(Medal)) %>%
+  mutate(Team = factor(Team, levels = lev_teams)) %>%
+  ggplot(aes(Team, Count, fill = Medal)) +
+  geom_col() + coord_flip() +
+  scale_fill_manual(values = c("honeydew1","yellowgreen","turquoise4")) +
+  ggtitle("Historical medal counts from Alpine Skiing Competitions") +
+  theme(plot.title = element_text(size = 9,face="bold.italic"),
+        axis.title.x = element_text(size = 9,face="bold.italic"),
+        axis.title.y = element_text(size = 9,face="bold.italic"),
+        axis.text = element_text(size = 7),
+        legend.text = element_text(size = 8,face="italic"))
+ggplotly(p5.1)
+```
+
+This graph describes the most Medals (Gold, Silver and Bronze) won by different countries over the 120 year Olympics and shows the top 30 nations. As we move down, the difference between the number of Medals decreases.
+
+From this graph we can see that the top 3 nations with the most medals are USA, Russia, Germany, and the USA won the maximum number of medals, which includes Gold medals, Silver Medals and Bronze Medals. Also, the number of medals of the USA, the first place, is far greater than Russia, which is in second position.
+
+Based on this graph, most of the medal winners are from developed countries, which means that the development of [economics](https://towardsdatascience.com/visual-analysis-of-olympics-data-16273f7c6cf2) tends to have a positive correlation to numbers of the medals won. The Olympics was a good stage for the countries to show their power. Countries which were able to select from a greater population, can keep their athletes paid and trained and won more medals.
+
+```{r}
+ggplotly(p5.2)
+```
+
+Compared to Olympics, Alpine Skiing events have slight differences in the ranking of total medal numbers countries winning over the year. From the above plot, Austria, Switzerland, and France won more medals than the United States over the year. Australia, Switzerland, and France have their advantages concerning geographic factors and the places holding Alpine Skiing events. For instance:
+
+Austria is the homeland of winter sports, and Snowsports are the national sports in Austria. Their ski resort takes a lot of pride in its pistes and villages. Arlberg, Saalbach-Hinterglemm, and Ski Welt are among the most famous ski resort globally.
+
+Switzerland has top-class service and beautiful scenery, like Zermatt, an iconic ski resort in Matterhorn, Verbier, Four Valleys, and Grindelwald. Her blessed geographic location makes Switzerland one of the best countries for skiing in Europe.
+
+France is also home to some of the largest and most visited resorts in Europe. And the ease of travel for Brits makes France one of the best countries for skiing in Europe.
+
+
+### Picture 6
+
+The following diagram shows the global map to visualize the total medals won by each participating nation over the years. The color darkness scale represents the actual metals, including gold, silver, and Bronze medals. The gray color represents the nations that have never won an award before.
+
+From the graph, we can know that until 2016, nations such as Bolivia and many African countries had never won a medal before. Most of these nations are underdeveloped countries.
+
+So, as we mentioned above, the development of economics did affect the number of medals.
+
+
+```{r}
+medalcount <- olympic_athletes_events %>%
+          filter(!is.na(Medal)) %>% 
+          group_by(NOC, Medal, Event, Games) %>% 
+          summarize(isMedal = 1) %>%
+          group_by(NOC, Medal) %>% 
+          summarize(medal_count = sum(isMedal)) %>% 
+          left_join(noc_regions) %>%
+          rename(Team_nation = region) %>% 
+          select(Medal, Team_nation, medal_count) %>%
+          arrange(desc(medal_count))
+
+world_label <- world %>% 
+  group_by(region) %>% 
+  mutate(lat = mean(lat), long = mean(long)) %>% 
+  select(region, lat, long) %>% 
+  unique() %>% ungroup()
+
+world %>% left_join(
+    medalcount %>%
+    group_by(Team_nation) %>% # Team's total medal number over the years
+    summarize(Total = sum(medal_count)) %>% arrange(desc(Total)),
+    by = c('region' = 'Team_nation')) %>%
+    mutate(label = ifelse(Total < 800, "", region)) %>%
+    group_by(region) %>%
+    mutate(mean_long = mean(long), mean_lat = mean(lat)) %>%
+  ggplot(aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = Total)) + 
+  labs(x = "", y = "") + 
+  scale_fill_gradient(low = "white", high = "darkseagreen4") + 
+  ggtitle("Total Number of the Medals that Countries Win Over the Year") + 
+  stat_midpoint(aes(label = label, x = mean_long, y = mean_lat), geom = "text",size=2, color = "brown3") +
+  theme(plot.title = element_text(size = 9,face="bold.italic", color = "red3"),
+        axis.text = element_text(size = 7),
+        legend.title = element_text(size = 8,face="bold.italic"),
+        legend.text = element_text(size = 8,face="italic"))
+```
+
+
+## Q4: What is the Participation Ratio of Men to Women changes over time? Is this ratio increased or decreased?
+### Picture 7
+
+For a long time in history, the society of different countries has been sexist in many aspects. Even the inclusion of women in the Olympics, this global sports event, is affected.
+
+When the first modern Olympics was held in 1896 in Athens, Greece, women were deliberately barred. At the time, the founder of the IOC, Baron Pierre de Coubertin, argued an Olympics with women would be "impractical, uninteresting, unaesthetic and indecent." The Games, he said, were created for "the solemn and periodic exaltation of male athleticism" with "female applause as a reward."
+
+Under pressure from athletes such as French rower Alice Milliat who even launched a separate Olympics for women, the IOC began including more female events. In 2012, the global sporting body allowed women to compete in all sports on the Olympic program, and it was only in 2014 that it was committed to gender parity at the Games.
+
+As the world is still developing, more and more people began to pay attention to this issue, and the women's status began to rise, which can be shown in the history of the Olympics. [sexism problem in Olympics](https://www.aljazeera.com/news/2021/8/8/sexism-is-still-a-problem-at-the-first-gender-equal-olympics)
+ 
+```{r}
+yeartomod <- olympic_athletes_events %>% 
+              select(Year) %>% 
+              unique() %>%
+              filter((Year %% 4 > 0) & Year != 1906) %>% pull(Year)
+
+olympic_athletes_events %>% 
+  mutate(Year = ifelse(Year %in% yeartomod, Year + 2, Year)) %>%
+  group_by(Year, Sex) %>%
+  summarize(Athlete_number = length(unique(ID))) %>% arrange(Year) %>% 
+  ggplot(aes(x = Year, y = Athlete_number, group = Sex, color = Sex)) + 
+  geom_point(size = 2) + 
+  geom_line() + 
+  geom_smooth(method = "loess", formula = 'y ~ x', linetype = 3) + 
+  scale_color_manual(values= c("cornflowerblue", "deeppink2")) + 
+  theme_classic() + 
+  labs(x = "Year", y = "Athlete Number") +
+  ggtitle("Athletes attending Olympics over time \nregarding male and female athletes") + 
+  theme(plot.title = element_text(size = 10,face="bold.italic", color = "brown3"),
+        axis.title.x = element_text(size = 9,face="bold.italic"),
+        axis.title.y = element_text(size = 9,face="bold.italic"),
+        axis.text = element_text(size = 7),
+        legend.text = element_text(size = 8,face="italic"))  # +  transition_reveal(Year)
+```
+
+In this Analysis, we draw an animated line graph to show the total number of Male and Female Participants in different seasons of the Olympic Games over the years.
+
+We can see that as time passed, at first, there were almost no female participants in the Olympics till the 1920s, and nearly all participants were male.
+
+After the 1920s, the participation of females slightly increased. Moreover, after the 1950s, the number of female participants started snowballing.
+
+
+## Q5: Are athlete’s Age, Height and Weight related to their race results?
+### Picture 8 
+
+We first try to consider using PCA to analyze how age, height and weight contribute to the result of winning medals.
+
+```{r}
+# Intuitively, use PCA to analyse the problem
+scaled_olympics <- olympic_athletes_events %>% na.omit() %>%
+  select(Team, Sex, Age, Height, Weight, Medal) %>%
+  mutate(across(where(is.numeric), ~round((.x-mean(.x))/sd(.x), 2))) %>%
+  mutate(Sex = ifelse(Sex == "M", 1, 0))
+pca <- prcomp(scaled_olympics[,3:5],center=T, retx=T)
+# Principal Component Loading
+mat_round <- function(matrix, n = 3) apply(matrix, 2, function(x) round(x, n))
+pc1 <- paste("PC1 =", paste(round(pca$rotation[,1], 2), "x", rownames(pca$rotation), collapse = " + "))
+pc2 <- paste("PC2 =", paste(round(pca$rotation[,2], 2), "x", rownames(pca$rotation), collapse = " + "))
+# pc1;pc2
+```
+
+According to `prcomp`, we gain the first two principal components contructed as:
+
+1. PC1 = -0.21 x Age + -0.69 x Height + -0.7 x Weight
+
+2. PC2 = 0.98 x Age + -0.19 x Height + -0.11 x Weight
+
+With rotation metrix be:
+
+```{r}
+mat_round(pca$rotation)
+```
+
+and importance of the components:
+
+```{r}
+summary(pca)
+```
+
+Draw a score plot with groups colored by `medal.` Medal results seem not ideal to be classified by principal components composed of Age, Weight, and Height, concerning the fact that the first two principals have already been efficient in explaining 93.5% of the information of Age, Weight, and Height. Yet, the Medal results are still mixed in the score plot.
+
+```{r}
+s <- summary(pca)
+df_pca <- data.frame(pca$x) %>%
+  mutate(Medal = scaled_olympics$Medal)
+xlab <- paste("PC 1 (", round(s$importance[2,1]*100, 1), "%)", sep = "")
+ylab <- paste("PC 2 (", round(s$importance[2,2]*100, 1), "%)", sep = "")
+# use PCA for clustering
+scores <- pca$x[,1:2]
+k <- kmeans(scores, centers = 3) 
+data_pca <- data.frame(scores) %>%
+  mutate(cluster = factor(k$cluster), Medal = scaled_olympics$Medal)
+
+# clusters with first 2 principle components
+scores <- data.frame(scores) %>%
+  mutate(cluster = factor(k$cluster), 
+         Medal = scaled_olympics$Medal,
+         Team = scaled_olympics$Team)
+
+# Score plot 
+ggplot(scores %>% head(25), aes(PC1, PC2, color = Medal, label = Medal)) +
+  geom_point() +
+  geom_text(nudge_y = .1, size = 2.5) +
+  guides(color="none") + # coord_equal() + 
+  coord_fixed() +
+  ggtitle("Score plot of first two principal components") +
+  labs(x = xlab, y = ylab,
+       subtitle = "PC1 = -0.21 x Age + -0.69 x Height + -0.7 x Weight\nPC2 = 0.98 x Age + -0.19 x Height + -0.11 x Weight") +
+  stat_ellipse(geom = "polygon", aes(fill = Medal),
+               alpha = 0.2, 
+               show.legend = TRUE,
+               level = 00.95) +
+  theme(
+  plot.title = element_text(color = "red", size = 11, face = "bold"),
+  plot.subtitle = element_text(color = "blue", size = 8),
+  plot.caption = element_text(color = "green", face = "italic", size = 8),
+  legend.title = element_text(color = "grey3", face = "bold.italic", size = 8),
+  legend.text = element_text(color = "grey3", face = "italic", size = 8),
+  axis.title = element_text(color = "grey3", face = "bold.italic", size = 9),
+  axis.text = element_text(color = "grey3", face = "italic", size = 7)
+)
+```  
+
+But for PCA, we can classify athletes into several clusters to represent their features of age, weight and height:
+
+```{r warning=FALSE}
+ggplot(scores %>% head(25), aes(PC1, PC2, color = cluster, label = Team)) +
+  geom_point() +
+  geom_text(nudge_y = .1, size = 2.5) +
+  guides(color="none") + # coord_equal() + 
+  coord_fixed() +
+  ggtitle("Score plot of first two principal components") +
+  labs(x = xlab, y = ylab,
+       subtitle = "PC1 = -0.21 x Age + -0.69 x Height + -0.7 x Weight\nPC2 = 0.98 x Age + -0.19 x Height + -0.11 x Weight") +
+  stat_ellipse(geom = "polygon", aes(fill = cluster),
+               alpha = 0.2, 
+               show.legend = TRUE,
+               level = 00.95) +
+  theme(
+  plot.title = element_text(color = "red", size = 11, face = "bold"),
+  plot.subtitle = element_text(color = "blue", size = 8),
+  plot.caption = element_text(color = "green", face = "italic", size = 8),
+  legend.title = element_text(color = "grey3", face = "bold.italic", size = 8),
+  legend.text = element_text(color = "grey3", face = "italic", size = 8),
+  axis.title = element_text(color = "grey3", face = "bold.italic", size = 9),
+  axis.text = element_text(color = "grey3", face = "italic", size = 7)
+)
+```
+
+
+In scatterplot of scaled data points and principal components representative lines, we still couldn't see different age, weight, and height patterns related to medal results.
+
+```{r}
+scaled_olympics[20:31,] %>%
+  ggplot(aes(Age, Height, label = Team)) +
+  geom_point() +
+  geom_abline(slope = pca$rotation[2,1]/pca$rotation[1,1], intercept = 0, color = "mediumpurple") +
+  geom_abline(slope = pca$rotation[2,2]/pca$rotation[1,2], intercept = 0, color = "cornflowerblue") +
+  annotate("text", x = .45, y = 1.2, label = "PC1", angle = 75, size = 3,
+           color = "mediumpurple")  +
+  annotate("text", x = -.4, y = 0, label = "PC2", angle = -10, size = 3,
+           color = "cornflowerblue") +
+  geom_text_repel(nudge_y = .1, size = 2.5) +
+  coord_equal() +
+  labs(title = "Scatterplot of scaled Olympics data with Principal Components") + 
+  theme(
+  plot.title = element_text(color = "brown3", size = 10, face = "bold"),
+  plot.subtitle = element_text(color = "blue", size = 8),
+  plot.caption = element_text(color = "green", face = "italic", size = 8),
+  legend.title = element_text(color = "grey3", face = "bold.italic", size = 8),
+  legend.text = element_text(color = "grey3", face = "italic", size = 8),
+  axis.title = element_text(color = "grey3", face = "bold.italic", size = 9),
+  axis.text = element_text(color = "grey3", face = "italic", size = 7)
+)
+```
+
+
+### Picture 9
+
+Concerning the unideal result drawn by PCA, we use a direct method to describe the three factors:
+
+
+```{r warning=FALSE}
+p4.1<- olympic_athletes_events %>% 
+        mutate(Medal = ifelse(is.na(Medal), "No Medal", Medal)) %>%
+        ggplot(aes(x=Medal, y=Age,color=Medal,fill=Sex)) + 
+        geom_boxplot()+
+        scale_fill_manual(values = c('#999999', '#E69F00', '#56B4E9')) +
+        ggtitle("Boxplot for Age vs Medal", subtitle = " -- Concerning Gender") + 
+        theme(
+            plot.title = element_text(color = "brown3", size = 10, face = "bold.italic"),
+            plot.subtitle = element_text(color = "blue", size = 8),
+            plot.caption = element_text(color = "green", face = "italic", size = 8),
+            legend.title = element_text(color = "grey3", face = "bold.italic", size = 8),
+            legend.text = element_text(color = "grey3", face = "italic", size = 8),
+            axis.title = element_text(color = "grey3", face = "bold.italic", size = 9),
+            axis.text = element_text(color = "grey3", face = "italic", size = 7)
+        )
+p4.2<- olympic_athletes_events %>%
+        mutate(Medal = ifelse(is.na(Medal), "No Medal", Medal)) %>%
+        ggplot(aes(x=Medal, y=Height,color=Medal,fill=Sex)) + 
+        geom_boxplot()+
+        scale_fill_manual(values = c('#999999', '#E69F00', '#56B4E9')) +
+        ggtitle("Boxplot for Height vs Medal", subtitle = " -- Concerning Gender") + 
+        theme(
+            plot.title = element_text(color = "brown3", size = 10, face = "bold.italic"),
+            plot.subtitle = element_text(color = "blue", size = 8),
+            plot.caption = element_text(color = "green", face = "italic", size = 8),
+            legend.title = element_text(color = "grey3", face = "bold.italic", size = 8),
+            legend.text = element_text(color = "grey3", face = "italic", size = 8),
+            axis.title = element_text(color = "grey3", face = "bold.italic", size = 9),
+            axis.text = element_text(color = "grey3", face = "italic", size = 7)
+        )
+p4.3<- olympic_athletes_events %>% 
+        mutate(Medal = ifelse(is.na(Medal), "No Medal", Medal)) %>%
+        ggplot(aes(x=Medal, y=Weight,color=Medal,fill=Sex)) + 
+        geom_boxplot()+
+        scale_fill_manual(values = c('#999999', '#E69F00', '#56B4E9')) +
+        ggtitle("Boxplot for Weight vs Medal", subtitle = " -- Concerning Gender") + 
+        theme(
+            plot.title = element_text(color = "brown3", size = 10, face = "bold.italic"),
+            plot.subtitle = element_text(color = "blue", size = 8),
+            plot.caption = element_text(color = "green", face = "italic", size = 8),
+            legend.title = element_text(color = "grey3", face = "bold.italic", size = 8),
+            legend.text = element_text(color = "grey3", face = "italic", size = 8),
+            axis.title = element_text(color = "grey3", face = "bold.italic", size = 9),
+            axis.text = element_text(color = "grey3", face = "italic", size = 7)
+        )
+p4.1
+```
+
+As the Boxplot of Age suggests, their average age is not significantly related to the type of medal they won for female athletes who won medals. But the average age of female athletes who did not win a medal is lower than that of women who won a medal. For male athletes who won medals, the average age of men who won a silver medal is higher than that of men who won the other two types of medals. The average age of male athletes who did not win a medal is not significantly different from that of men who won gold and bronze medals. Overall, the average height of the athletes is not mainly related to their race results.
+
+```{r}
+p4.2
+```
+
+As Boxplot2 of Height indicates, there is no significant difference in average height among the different groups with different types of medals for both male and female athletes. Still, the average height of non-medal athletes is lower than that of medal-winning athletes. In general, the average height of athletes who won medals is higher than the average height of athletes who did not win medals, so it can be considered that height has a specific relationship with race results.
+
+```{r}
+p4.3
+```
+
+As Boxplot3 of Weight reveals, the relationship between athletes' weight and race results is similar to the relationship between the height and race results of athletes. So we can conclude that weight has a specific relationship with race results since the average weight of athletes who won medals is higher than the average weight of athletes who did not win medals.

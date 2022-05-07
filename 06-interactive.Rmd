@@ -1,3 +1,206 @@
 # Interactive component
 
+## Reference Q3: Which countries are the most dominant over the history of Olympics?
+
+### Interactive 1
+
+- Simple Tutorial:
+
+1. This interactive plot choose four Olympics over the years, from Amsterdam 1928, Melbourne 1956, Seoul 1988 and Rio 2016. 
+
+2. Bubble size indicates the attendance volumes of athletes outside the US in every four events. Also, 'leaflet' enable the map to zoom up and move to a specific view in this window. I specified the initial view focusing on the European areas.
+
+3. The lower left corner has a small option buttons to choose the event, and plot will show corresponding popup bubbles. 
+
+4. **A little more about this map**: The upper right corner of the window has a button, where we could meaure the distances and areas of geographic spots that we might be interested in.
+
+
+```{r}
+world <- map_data("world")
+
+amsterdam <- olympic_athletes_events %>% 
+  filter(Year == 1928 & Season == "Summer") %>%
+  group_by(region) %>%
+  summarize(Amsterdam = length(unique(ID))) 
+
+melbourne <- olympic_athletes_events %>% 
+  filter(Year == 1956 & Season == "Summer") %>%
+  group_by(region) %>%
+  summarize(Melbourne = length(unique(ID))) 
+
+seoul <- olympic_athletes_events %>% 
+  filter(Year == 1988 & Season == "Summer") %>%
+  group_by(region) %>%
+  summarize(Seoul = length(unique(ID)))
+
+rio <- olympic_athletes_events %>% 
+  filter(Year == 2016 & Season == "Summer") %>%
+  group_by(region) %>%
+  summarize(Rio = length(unique(ID)))
+
+world_formap <- world %>% left_join(
+  tibble(region=unique(world$region))) %>% 
+    left_join(amsterdam, by="region") %>%
+    left_join(melbourne, by="region") %>%
+    left_join(seoul, by="region") %>%
+    left_join(rio, by="region") %>%
+    mutate(Amsterdam = ifelse(is.na(Amsterdam), 0, Amsterdam),
+           Melbourne = ifelse(is.na(Melbourne), 0, Melbourne),
+           Seoul = ifelse(is.na(Seoul), 0, Seoul),
+           Rio = ifelse(is.na(Rio), 0, Rio)) %>%
+  filter(Amsterdam > 0 | Melbourne > 0 | Seoul > 0 | Rio > 0) %>%
+  select(region, long, lat, Amsterdam, Melbourne, Seoul, Rio) %>%
+  group_by(region) %>%
+  summarize(long = mean(long),
+            lat = mean(lat),
+            Amsterdam, 
+            Melbourne,
+            Seoul,
+            Rio) %>%
+  unique() 
+
+world_formap <- world_formap %>%  # For map color
+    add_column(pop = sample(80000:1000000, 200, replace=TRUE))
+
+# create color palettes
+cityPalette_1 <- colorNumeric(palette = "Purples", domain=world_formap$pop )
+cityPalette_2 <- colorNumeric(palette = "Reds", domain=world_formap$pop)
+cityPalette_3 <- colorNumeric(palette = "Blues", domain=world_formap$pop)
+cityPalette_4 <- colorNumeric(palette = "Greens", domain=world_formap$pop)
+
+leaflet(world_formap) %>% 
+  addTiles() %>%
+  addProviderTiles(providers$Stamen.Toner, group = "Toner") %>%
+  addProviderTiles(providers$Stamen.TonerLite, group = "Toner Lite") %>%
+  addMeasure(primaryLengthUnit = "meters") %>%
+  addCircles(lng = ~long, lat = ~lat,
+             weight = 1,
+             radius = ~ Amsterdam * 3000, 
+             color = ~cityPalette_1(world_formap$pop),
+             popup = ~ region,
+             group = "Amsterdam"
+             ) %>%  # Amsterdam * 1000 
+  addCircles(lng = ~long, lat = ~lat,
+           weight = 1,
+           radius = ~ Melbourne * 3000,
+           color = ~cityPalette_2(world_formap$pop),
+           popup = ~ region,
+           group = "Melbourne"
+           ) %>%
+  addCircles(lng = ~long, lat = ~lat,
+           weight = 1,
+           radius = ~ Seoul * 3000, 
+           color = ~cityPalette_3(world_formap$pop),
+           popup = ~ region,
+           group = "Seoul"
+           ) %>%
+  addCircles(lng = ~long, lat = ~lat,
+           weight = 1,
+           radius = ~ Rio * 3000, 
+           color = ~cityPalette_4(world_formap$pop),
+           popup = ~ region,
+           group = "Rio"
+           ) %>%
+  addLayersControl(
+    baseGroups=c("Amsterdam", "Melbourne", "Seoul", "Rio"),
+    position = "bottomleft",
+    options = layersControlOptions(collapsed = FALSE)
+  ) %>%
+  setView(lng = 9, lat = 53, zoom = 2.5)
+```
+
+
+## Reference Q4: What is the Participation Ratio of Men to Women changes over time? Is this ratio increased or decreased?
+
+### Interactive 2
+
+This is an animated version of the evolution for female and male athletes attending Olympics over time.
+
+```{r}
+olympic_athletes_events %>% 
+  mutate(Year = ifelse(Year %in% yeartomod, Year + 2, Year)) %>%
+  group_by(Year, Sex) %>%
+  summarize(Athlete_number = length(unique(ID))) %>% arrange(Year) %>% 
+  ggplot(aes(x = Year, y = Athlete_number, group = Sex, color = Sex)) + 
+  geom_point(size = 2) + 
+  geom_line() + 
+  scale_color_manual(values= c("cornflowerblue", "deeppink2")) + 
+  theme_classic() + 
+  labs(x = "Year", y = "Athlete Number") +
+  ggtitle("Athletes attending Olympics over time \nregarding male and female athletes") + 
+  theme(plot.title = element_text(size = 9,face="bold.italic", color = "red3")) + 
+  transition_reveal(Year)
+```
+
+### Interactive 3
+
+Scatter-plot of female and male athletes attending Olympics over time.
+
+1. Labels include the information of country, attending female athletes number, attending male athletes number and female versus male athlete ratio (*100). 
+
+2. Different color indicates different years of the events.
+
+
+```{r}
+gender_athlete_continent <- olympic_athletes_events %>% 
+  group_by(Year, NOC, Sex) %>%
+  summarize(athlete_num = length(unique(ID))) %>%
+  spread(Sex, athlete_num) %>%
+  mutate(athlete_total = sum(F, M, na.rm = TRUE)) %>% 
+  filter(athlete_total > 30) %>%
+  mutate(F = ifelse(is.na(F), 0, F),
+         M = ifelse(is.na(M), 0, M), 
+         Year = as.factor(Year)) %>%
+  left_join(noc_regions %>% select(-notes)) %>%
+  mutate(continent = countrycode(sourcevar = region,
+                                 origin = "country.name",
+                                 destination = "continent"))
+
+t <- list(
+  family = "Times New Roman",
+  size = 13)
+
+t1 <- list(
+  family = "Times New Roman",
+  size = 11)
+
+fig <- gender_athlete_continent %>%
+  mutate(FMratio = (F/M) * 100) %>%
+  plot_ly(
+    type = "scatter",
+    mode = "markers",
+    x = ~ M,
+    y = ~ F,
+    text = ~ region,
+    marker = list(size = ~ FMratio, sizered = 40, sizemode = 'area'),
+    color = ~ Year,
+    hovertemplate = paste(
+      "<b>%{text}</b><br><br>",
+      "%{yaxis.title.text}: %{y:.0f}<br>",
+      "%{xaxis.title.text}: %{x:.0f}<br>",
+      "F/M participation percentage: %{marker.size:,}",
+      "<extra></extra>"
+    ) 
+  ) %>%
+   layout(title= list(
+     text = "Female vs Male Athletes attending Olympics \n from different Nations over the Year", 
+     font = list(family = "Times New Roman", size = 13)),
+     legend = list(font = list(family = "Times New Roman", size = 10)),
+     xaxis = list(title = list(text ='Male', font = t1)),
+     yaxis = list(title = list(text ='Female', font = t1))
+     )
+fig
+
+```
+
+In the Olympics games of 2014 and 2016, the female participants even reached the highest peak.
+
+Overall, as the time increases, the number of Male participants is always less than Female participants, even though the number of Female participants has improved a lot in Olympics.
+
+Even though we have shown increased participation of females in the Olympics movement, not all countries can pay attention to sexism and invest equally in female athletes.
+
+This bubble graph shows the ratio of female athletes versus male athletes from different nations over the 120-year Olympics. The color represents additional years of the Olympics games. The bigger the bubble is, the higher the balance is.
+From the 1900s to the 1950s, the ratio was relatively small, which meant low participation of females. Since the 1960s, there has been a dramatic improvement in female participation.
+
+In 2014 and 2016, gray bubbles reached the biggest, representing that the female participants reached the highest peak.
 

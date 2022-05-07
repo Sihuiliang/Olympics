@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 2 Data sources | Olympics</title>
   <meta name="description" content="Chapter 2 Data sources | Olympics" />
-  <meta name="generator" content="bookdown 0.25 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.26 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 2 Data sources | Olympics" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Sihui Liang, Yuxuan Fu" />
 
 
-<meta name="date" content="2022-04-07" />
+<meta name="date" content="2022-05-06" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -52,6 +52,24 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.10.0/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-2.5.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-2.5.1/plotly-latest.min.js"></script>
+<link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="libs/proj4-2.6.2/proj4.min.js"></script>
+<script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-binding-2.1.1/leaflet.js"></script>
+<script src="libs/leaflet-providers-1.9.0/leaflet-providers_1.9.0.js"></script>
+<script src="libs/leaflet-providers-plugin-2.1.1/leaflet-providers-plugin.js"></script>
+<link href="libs/leaflet-measure-2.1.7/leaflet-measure.css" rel="stylesheet" />
+<script src="libs/leaflet-measure-2.1.7/leaflet-measure.min.js"></script>
 
 
 
@@ -72,13 +90,53 @@
 <li><a href="./">Olympics</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction<span></span></a></li>
-<li class="chapter" data-level="2" data-path="data-sources.html"><a href="data-sources.html"><i class="fa fa-check"></i><b>2</b> Data sources<span></span></a></li>
-<li class="chapter" data-level="3" data-path="data-transformation.html"><a href="data-transformation.html"><i class="fa fa-check"></i><b>3</b> Data transformation<span></span></a></li>
-<li class="chapter" data-level="4" data-path="missing-values.html"><a href="missing-values.html"><i class="fa fa-check"></i><b>4</b> Missing values<span></span></a></li>
-<li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results<span></span></a></li>
-<li class="chapter" data-level="6" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>6</b> Interactive component<span></span></a></li>
-<li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion<span></span></a></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="data-sources.html"><a href="data-sources.html"><i class="fa fa-check"></i><b>2</b> Data sources</a></li>
+<li class="chapter" data-level="3" data-path="data-transformation.html"><a href="data-transformation.html"><i class="fa fa-check"></i><b>3</b> Data transformation</a></li>
+<li class="chapter" data-level="4" data-path="missing-values.html"><a href="missing-values.html"><i class="fa fa-check"></i><b>4</b> Missing values</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="missing-values.html"><a href="missing-values.html#alpine_skiing.csv"><i class="fa fa-check"></i><b>4.1</b> Alpine_skiing.csv</a></li>
+<li class="chapter" data-level="4.2" data-path="missing-values.html"><a href="missing-values.html#olympic-athletes-and-events.csv"><i class="fa fa-check"></i><b>4.2</b> Olympic Athletes and Events.csv</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="results.html"><a href="results.html"><i class="fa fa-check"></i><b>5</b> Results</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="results.html"><a href="results.html#q1-as-economics-exploded-what-was-the-development-of-the-120-years-olympics-from-1986-to-2016"><i class="fa fa-check"></i><b>5.1</b> Q1: As economics exploded, what was the development of the 120 years Olympics from 1986 to 2016?</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="results.html"><a href="results.html#picture-1"><i class="fa fa-check"></i><b>5.1.1</b> Picture 1</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="results.html"><a href="results.html#q2-since-the-2022-winter-olympics-was-held-this-year-what-about-the-development-of-alpine-skiing-in-the-winter-olympics"><i class="fa fa-check"></i><b>5.2</b> Q2: Since the 2022 Winter Olympics was held this year, what about the development of Alpine Skiing in the Winter Olympics?</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="results.html"><a href="results.html#picture-3"><i class="fa fa-check"></i><b>5.2.1</b> Picture 3</a></li>
+<li class="chapter" data-level="5.2.2" data-path="results.html"><a href="results.html#picture-4"><i class="fa fa-check"></i><b>5.2.2</b> Picture 4</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="results.html"><a href="results.html#q3-which-countries-are-the-most-dominant-over-the-history-of-olympics"><i class="fa fa-check"></i><b>5.3</b> Q3: Which countries are the most dominant over the history of Olympics?</a>
+<ul>
+<li class="chapter" data-level="5.3.1" data-path="results.html"><a href="results.html#picture-5"><i class="fa fa-check"></i><b>5.3.1</b> Picture 5</a></li>
+<li class="chapter" data-level="5.3.2" data-path="results.html"><a href="results.html#picture-6"><i class="fa fa-check"></i><b>5.3.2</b> Picture 6</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="results.html"><a href="results.html#q4-what-is-the-participation-ratio-of-men-to-women-changes-over-time-is-this-ratio-increased-or-decreased"><i class="fa fa-check"></i><b>5.4</b> Q4: What is the Participation Ratio of Men to Women changes over time? Is this ratio increased or decreased?</a>
+<ul>
+<li class="chapter" data-level="5.4.1" data-path="results.html"><a href="results.html#picture-7"><i class="fa fa-check"></i><b>5.4.1</b> Picture 7</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="results.html"><a href="results.html#q5-are-athletes-age-height-and-weight-related-to-their-race-results"><i class="fa fa-check"></i><b>5.5</b> Q5: Are athlete’s Age, Height and Weight related to their race results?</a>
+<ul>
+<li class="chapter" data-level="5.5.1" data-path="results.html"><a href="results.html#picture-8"><i class="fa fa-check"></i><b>5.5.1</b> Picture 8</a></li>
+<li class="chapter" data-level="5.5.2" data-path="results.html"><a href="results.html#picture-9"><i class="fa fa-check"></i><b>5.5.2</b> Picture 9</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>6</b> Interactive component</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="interactive-component.html"><a href="interactive-component.html#reference-q3-which-countries-are-the-most-dominant-over-the-history-of-olympics"><i class="fa fa-check"></i><b>6.1</b> Reference Q3: Which countries are the most dominant over the history of Olympics?</a>
+<ul>
+<li class="chapter" data-level="6.1.1" data-path="interactive-component.html"><a href="interactive-component.html#interactive-1"><i class="fa fa-check"></i><b>6.1.1</b> Interactive 1</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="interactive-component.html"><a href="interactive-component.html#reference-q4-what-is-the-participation-ratio-of-men-to-women-changes-over-time-is-this-ratio-increased-or-decreased"><i class="fa fa-check"></i><b>6.2</b> Reference Q4: What is the Participation Ratio of Men to Women changes over time? Is this ratio increased or decreased?</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="interactive-component.html"><a href="interactive-component.html#interactive-2"><i class="fa fa-check"></i><b>6.2.1</b> Interactive 2</a></li>
+<li class="chapter" data-level="6.2.2" data-path="interactive-component.html"><a href="interactive-component.html#interactive-3"><i class="fa fa-check"></i><b>6.2.2</b> Interactive 3</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>7</b> Conclusion</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 </ul>
@@ -100,6 +158,48 @@
             <section class="normal" id="section-">
 <div id="data-sources" class="section level1 hasAnchor" number="2">
 <h1><span class="header-section-number">Chapter 2</span> Data sources<a href="data-sources.html#data-sources" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>This project focuses on the topic of the Olympics. Our data are derived from <a href="https://www.sportsvizsunday.com/olympics-winter-olympics">Sports Viz Sunday</a>, which is a platform for people who are interested in sport and exploring the sports data and visualization in the world.</p>
+<p>The following options were chosen for the datasets:</p>
+<ul>
+<li><p>Data on medals &amp; countries from the Summer and Winter Olympics dating back to 1896, with two main sheets of ‘Olympics’, ‘Olympics Athletes and Event’ on medal events and info of each athlete.</p></li>
+<li><p>Data on Winter Olympics, with three main sheets of ‘Winter Olympic Medals’, ‘Alpine Skiing’ and ‘Winter Olympic Medal History’.</p></li>
+<li><p>Data on Paralympics, with two main sheets of ‘ParalymicsData’ and ‘UKparalymics’</p></li>
+</ul>
+<p>Since the goal is mainly focused on evaluating the evolution of Olympic Games by different factors and aspects over the years, the ‘Olympics Athletes and Event’ dataset was chosen. It not only includes data of the summer and winter Olympics, but also has specific athlete information, such as their age, weight and height. Based on these variables, we can analyze whether their age, weight and height are related to the competition results, while other dataset failed to provide the information needed.
+Moreover, since the 2022 Winter Olympics was held this year, The Alpine Skiing,one of the interesting winter Olympics events, was investigated. THerefore, the ‘Alpine Skiing’ dataset was also selected.</p>
+<p>Here are some basic information about the dataset ‘Olympic Athletes and Events’:</p>
+<ol style="list-style-type: decimal">
+<li>Brief introduction about this dataset:</li>
+</ol>
+<p>This is a historical dataset on the modern Olympic Games, including all the Games from Athens 1896 to Rio 2016. It includes not only the year and city of each Olympics games, but also each athlete’s basic information.</p>
+<ol start="2" style="list-style-type: decimal">
+<li>Types of variables</li>
+</ol>
+<p>Categorical Variables: ID, Name, Sex, Team, NOC, Games, Year, Season, City, Sport, Event, and medal
+Numerical Variables: Age, Height, Weight</p>
+<ol start="3" style="list-style-type: decimal">
+<li>Number of records:</li>
+</ol>
+<p>271,116 Rows, 15 Columns</p>
+<p>Here are some basic information about our dataset ‘alpine skiing’:</p>
+<ol style="list-style-type: decimal">
+<li>Brief introduction about this dataset:</li>
+</ol>
+<p>This is a dataset about the Alpine skiing Event in the Winter Olympic Games, including all the Alpine skiing Games from Athens 1896 to Rio 2016. The dominant information we would use in this dataset is Event, Season, Gender, and Nation, with many missing values in time-seconds related terms. Still, luckily we only won’t pay much attention to these time-related columns.</p>
+<ol start="2" style="list-style-type: decimal">
+<li>Types of variables</li>
+</ol>
+<p>Categorical Variables: Race-ID, Codex, Event, Place, Place_Country, Place_region, Date, Season, Athlete, Nation, Birthyear, Gender, Bib(starter_no), Rank, Time_total_datetime, Difference_Total_datetime, Difference_Total_seconds, Difference_R2_datetime, Difference_R2_seconds, Difference_R1_datetime, Difference_R1_seconds, Time_R2_seconds, Time_R1_datetime, Time_R1_seconds, FIS Points, WC Points</p>
+<p>Numerical Variables: Gender, Time_total_seconds, Latitude, Longitude</p>
+<ol start="3" style="list-style-type: decimal">
+<li>Number of records:</li>
+</ol>
+<p>118,584 Rows, 30 Columns</p>
+<p><strong>Notation about ‘Olympic Athletes and Events’ dataset:</strong></p>
+<ol style="list-style-type: decimal">
+<li><p>A common mistake people make when analyzing this data is to assume that the Summer and Winter Games have always been staggered. However, the Winter and Summer Games were held in the same year up until 1992. After 1992, they staggered them such that Winter Games occur on a four year cycle starting with 1994, then Summer in 1996, then Winter in 1998, and so on.</p></li>
+<li><p>Between 1912-1920, and 1936-1948, there are two long periods without any Games, corresponding to the first World War and the Second World War.</p></li>
+</ol>
 
 </div>
             </section>
